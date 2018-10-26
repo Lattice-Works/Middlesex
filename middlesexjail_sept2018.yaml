@@ -1,0 +1,370 @@
+entityDefinitions:
+  people:
+    fqn: general.person
+    entitySetName: "MSOPeople"
+    propertyDefinitions:
+      nc.SubjectIdentification:
+        type:  "nc.SubjectIdentification" 
+        column: "isno_a"
+        # transforms: 
+        # - !<transforms.ReplaceTransform>
+        #   target: " "
+        #   goal: ""
+      nc.PersonGivenName:
+        type: "nc.PersonGivenName"
+        column: "f_name"
+      nc.PersonMiddleName:
+        type: "nc.PersonMiddleName"
+        column: "m_name"
+      nc.PersonSurName:
+        type: "nc.PersonSurName"
+        column: "l_name"
+      nc.PersonRace:
+        type: "nc.PersonRace"
+        column: "race"
+        transforms: 
+        - !<transforms.ReplaceTransform>
+          target: ["ASN", "CAU", "BLA", "IND", "OTR", "HSP"]
+          goal: ["asian", "white", "black", "amindian", "other", ""]
+      nc.PersonEthnicity:
+        type: "nc.PersonEthnicity"
+        column: "race"
+        transforms: 
+        - !<transforms.ReplaceTransform>
+          target: ["HSP", "ASN", "CAU", "BLA", "IND", "OTR"]
+          goal: ["hispanic", "", "", "", "", ""]
+      nc.PersonBirthDate:
+        type: "nc.PersonBirthDate"
+        column: "dt_ob"
+        transforms:
+        - !<transforms.DateTransform>
+          pattern: ["MM/dd/yy","M/dd/yy","MM/d/yy","M/d/yy"]
+      nc.PersonSex:
+        type: "nc.PersonSex"
+        transforms:
+        - !<transforms.ValueTransform>
+          value: "M"
+      nc.SSN:
+        type: "nc.SSN"
+        column: "ssno"
+      nc.PersonBirthPlace:
+        type: "nc.PersonBirthPlace"
+        column: "birth"
+    name: "people"
+    entityIdGenerator: null
+    currentSync: false
+
+  persondetails:
+    fqn: "ol.persondetails"
+    entitySetName: "MSOPersonDetails"
+    propertyDefinitions:
+      person.maritalstatus:
+        type: "person.maritalstatus"
+        column: "marit"
+      nc.PersonHeightMeasure:
+        type: "nc.PersonHeightMeasure"
+        column: "hgt"
+        transforms:
+        - !<transforms.ParseIntTransform> {}
+      nc.PersonWeightMeasure:
+        type: "nc.PersonWeightMeasure"
+        column: "wgt"
+        transforms:
+        - !<transforms.ParseIntTransform> {}
+      ol.eyecolor:
+        type: "ol.eyecolor"
+        column: "eyes"
+      ol.haircolor:
+        type: "ol.haircolor"
+        column: "hair"
+      nc.complexion:
+        type: "nc.complexion"
+        column: "cmplx"
+      person.highesteducation:
+        type: "person.highesteducation"
+        column: "educ"
+      ol.numberofchildren:
+        type: "ol.numberofchildren"
+        column: "child"
+    name: "persondetails"
+    entityIdGenerator: null
+    currentSync: false
+
+  arrestingagency:
+    fqn: "ol.agency"
+    entitySetName: "MSOArrestingAgency"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "ar_agen"
+      ol.name:
+        type: "ol.name"
+        column: "ar_agen"
+    name: "arrestingagency"
+    entityIdGenerator: null
+    currentSync: false
+
+  jailstay:
+    fqn: "ol.jailstay"
+    entitySetName: "MSOJailStays"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "counter"
+      criminaljustice.releasenotes:
+        type: "criminaljustice.releasenotes"
+        column: "rel_com"
+      criminaljustice.releasetype:
+        type: "criminaljustice.releasetype"
+        column: "rel_type"
+      incident.startdatetime:
+        type: "incident.startdatetime"
+        column: "dt_com"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["MM/dd/yy","M/dd/yy","MM/d/yy","M/d/yy"]
+      ol.releasedatetime:
+        type: "ol.releasedatetime"
+        column: "dt_rel"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["MM/dd/yy","M/dd/yy","MM/d/yy","M/d/yy"]
+      ol.projectedreleasedatetime:
+        type: "ol.projectedreleasedatetime"
+        column: "dt_exp"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["MM/dd/yy","M/dd/yy","MM/d/yy","M/d/yy"]
+      ol.notes:
+        type: "ol.notes"
+        column: "crt_com"
+    name: "jailstay"
+    entityIdGenerator: null
+    currentSync: false
+
+  bond:
+    fqn: "ol.bond"
+    entitySetName: "MSOBonds"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "bail"
+      criminaljustice.bailbondamount:
+        type: "criminaljustice.bailbondamount"
+        column: "bail"
+    name: "bond"
+    entityIdGenerator: null
+    currentSync: false
+
+  address:
+    fqn: "ol.location"
+    entitySetName: "MSOAddresses"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        transforms:
+          - !<transforms.ConcatTransform>
+            columns: ['addr','city', 'state', 'zip']
+            separator: "_"
+      location.street:
+        type: "location.street"
+        column: "addr"
+      location.city:
+        type: "location.city"
+        column: "city"
+      location.state:
+        type: "location.state"
+        column: "state"
+      location.zip:
+        type: "location.zip"
+        column: "zip"
+    name: "address"
+    entityIdGenerator: null
+    currentSync: false
+
+  charge:
+    fqn: "ol.charge"
+    entitySetName: "MSOCharges"
+    propertyDefinitions: 
+      ol.id:
+        type: "ol.id"
+        column: "maj_off"
+      ol.name:
+        type: "ol.name"
+        column: "maj_off"
+    name: "charge"
+    entityIdGenerator: null
+    currentSync: false
+
+  booking:
+    fqn: "ol.booking"
+    entitySetName: "MSOBookings"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "movcom"
+    name: "booking"
+    entityIdGenerator: null
+    currentSync: false
+
+
+############ ASSOCIATIONS
+associationDefinitions:
+  has:
+    fqn: "ol.has"
+    entitySetName: "MSOHas"
+    src: "people"
+    dst: "persondetails"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "isno_a"
+    name: "has"
+    entityIdGenerator: null
+    currentSync: false
+
+  bondset:
+    fqn: "ol.bondset"
+    entitySetName: "MSOBondSet"
+    src: "jailstay"
+    dst: "bond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['counter','bail']
+          separator: "_"
+    name: "bondset"
+    entityIdGenerator: null
+    currentSync: false
+
+  involvedin:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedIn"
+    src: "people"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "counter"
+      ol.role:
+        type: "ol.role"
+        transforms:
+        - !<transforms.ValueTransform>
+          value: "Inmate"
+    name: "involvedin"
+    entityIdGenerator: null
+    currentSync: false
+
+  subjectof:
+    fqn: "ol.subjectof"
+    entitySetName: "MSOSubjectOf"
+    src: "people"
+    dst: "bond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['counter','bail']
+          separator: "_"
+    name: "subjectof"
+    entityIdGenerator: null
+    currentSync: false  
+
+  arrestedby:
+    fqn: "ol.arrestedby"
+    entitySetName: "MSOArrestedBy"
+    src: "people"
+    dst: "arrestingagency"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['counter','isno_a']
+          separator: "_"
+    name: "arrestedby"
+    entityIdGenerator: null
+    currentSync: false
+
+  committedby:
+    fqn: "ol.committedby"
+    entitySetName: "MSOCommittedBy"
+    src: "people"
+    dst: "arrestingagency"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['counter','isno_a']
+          separator: "_"
+      ol.type:
+        type: "ol.type"
+        column: "com_type"
+      ol.notes:
+        type: "ol.notes"
+        column: "com_com"
+    name: "committedby"
+    entityIdGenerator: null
+    currentSync: false
+
+  locatedat:
+    fqn: "ol.locatedat"
+    entitySetName: "MSOLocatedAt"
+    src: "people"
+    dst: "address"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['isno_a', 'addr','city', 'state', 'zip']
+          separator: "_"
+    name: "locatedat"
+    entityIdGenerator: null
+    currentSync: false
+
+  chargedwith:
+    fqn: "ol.chargedwith"
+    entitySetName: "MSOChargedWith"
+    src: "people"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "counter"
+    name: "chargedwith"
+    entityIdGenerator: null
+    currentSync: false
+
+  relatedto1:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedTo"
+    src: "charge"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        transforms:
+        - !<transforms.ConcatTransform>
+          columns: ['counter','maj_off']
+          separator: "_"
+    name: "relatedto1"
+    entityIdGenerator: null
+    currentSync: true
+
+  relatedto2:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedTo"
+    src: "booking"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "counter"
+    name: "relatedto2"
+    entityIdGenerator: null
+    currentSync: true
