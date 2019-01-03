@@ -50,14 +50,25 @@ entityDefinitions:
       nc.PersonBirthPlace:
         type: "nc.PersonBirthPlace"
         column: "birth"
+      ol.datasource:
+        type: "ol.datasource"
+        transforms:
+        - !<transforms.ValueTransform>
+          value: "Middlesex Co Jail"
+## Not working with this condition, but not needed
+    # conditions:
+    # - !<conditions.BooleanIsNullCondition>
+    #   column: "isno_a"
+    #   reverse: true
     name: "people"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   persondetails:
     fqn: "ol.persondetails"
     entitySetName: "MSOPersonDetails"
     propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "isno_a"
       person.maritalstatus:
         type: "person.maritalstatus"
         column: "marit"
@@ -87,9 +98,7 @@ entityDefinitions:
         type: "ol.numberofchildren"
         column: "child"
     name: "persondetails"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   arrestingagency:
     fqn: "ol.agency"
     entitySetName: "MSOArrestingAgency"
@@ -101,9 +110,7 @@ entityDefinitions:
         type: "ol.name"
         column: "ar_agen"
     name: "arrestingagency"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   jailstay:
     fqn: "ol.jailstay"
     entitySetName: "MSOJailStays"
@@ -139,9 +146,7 @@ entityDefinitions:
         type: "ol.notes"
         column: "crt_com"
     name: "jailstay"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   bond:
     fqn: "ol.bond"
     entitySetName: "MSOBonds"
@@ -153,9 +158,7 @@ entityDefinitions:
         type: "criminaljustice.bailbondamount"
         column: "bail"
     name: "bond"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   address:
     fqn: "ol.location"
     entitySetName: "MSOAddresses"
@@ -179,9 +182,7 @@ entityDefinitions:
         type: "location.zip"
         column: "zip"
     name: "address"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   charge:
     fqn: "ol.charge"
     entitySetName: "MSOCharges"
@@ -193,9 +194,7 @@ entityDefinitions:
         type: "ol.name"
         column: "maj_off"
     name: "charge"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   booking:
     fqn: "ol.booking"
     entitySetName: "MSOBookings"
@@ -204,8 +203,6 @@ entityDefinitions:
         type: "ol.id"
         column: "movcom"
     name: "booking"
-    entityIdGenerator: null
-    currentSync: false
 
 
 ############ ASSOCIATIONS
@@ -220,9 +217,7 @@ associationDefinitions:
         type: "ol.id"
         column: "isno_a"
     name: "has"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   bondset:
     fqn: "ol.bondset"
     entitySetName: "MSOBondSet"
@@ -236,9 +231,7 @@ associationDefinitions:
           columns: ['counter','bail']
           separator: "_"
     name: "bondset"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   involvedin:
     fqn: "ol.involvedin"
     entitySetName: "MSOInvolvedIn"
@@ -254,9 +247,7 @@ associationDefinitions:
         - !<transforms.ValueTransform>
           value: "Inmate"
     name: "involvedin"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   subjectof:
     fqn: "ol.subjectof"
     entitySetName: "MSOSubjectOf"
@@ -270,9 +261,7 @@ associationDefinitions:
           columns: ['counter','bail']
           separator: "_"
     name: "subjectof"
-    entityIdGenerator: null
-    currentSync: false  
-
+    
   arrestedby:
     fqn: "ol.arrestedby"
     entitySetName: "MSOArrestedBy"
@@ -286,9 +275,7 @@ associationDefinitions:
           columns: ['counter','isno_a']
           separator: "_"
     name: "arrestedby"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   committedby:
     fqn: "ol.committedby"
     entitySetName: "MSOCommittedBy"
@@ -308,9 +295,7 @@ associationDefinitions:
         type: "ol.notes"
         column: "com_com"
     name: "committedby"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   locatedat:
     fqn: "ol.locatedat"
     entitySetName: "MSOLocatedAt"
@@ -324,9 +309,7 @@ associationDefinitions:
           columns: ['isno_a', 'addr','city', 'state', 'zip']
           separator: "_"
     name: "locatedat"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   chargedwith:
     fqn: "ol.chargedwith"
     entitySetName: "MSOChargedWith"
@@ -337,9 +320,7 @@ associationDefinitions:
         type: "ol.id"
         column: "counter"
     name: "chargedwith"
-    entityIdGenerator: null
-    currentSync: false
-
+    
   relatedto1:
     fqn: "ol.relatedto"
     entitySetName: "MSORelatedTo"
@@ -353,9 +334,7 @@ associationDefinitions:
           columns: ['counter','maj_off']
           separator: "_"
     name: "relatedto1"
-    entityIdGenerator: null
-    currentSync: true
-
+    
   relatedto2:
     fqn: "ol.relatedto"
     entitySetName: "MSORelatedTo"
@@ -366,5 +345,4 @@ associationDefinitions:
         type: "ol.id"
         column: "counter"
     name: "relatedto2"
-    entityIdGenerator: null
-    currentSync: true
+    
