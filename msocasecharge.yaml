@@ -1,0 +1,179 @@
+entityDefinitions:
+  jailstay:
+    fqn: "ol.jailstay"
+    entitySetName: "MSOJailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SYSID"
+    name: "jailstay"
+
+  charge:
+    fqn: "ol.offense"
+    entitySetName: "MSOCharge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.eventcount:
+        type: "ol.eventcount"
+        column: "CHARGE_ORDER"
+      ol.type:
+        type: "ol.type"
+        column: "CHARGE_TYPE_ID"
+    name: "charge"
+
+  chargeevent:
+    fqn: "ol.chargeevent"
+    entitySetName: "MSOChargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.code:
+        type: "ol.code"
+        column: "OFFENSE_CODE"
+      ol.description:
+        type: "ol.description"
+        column: "OFFENSE_DESCRIPTION"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "OFFENSE_DATE"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+      date.completeddatetime:
+        type: "date.completeddatetime"
+        column: "DATE_ADDED"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+      ol.notes:
+        type: "ol.notes"
+        column: "COMMENTS"
+    name: "chargeevent"
+
+  dischargingofficer:
+    fqn: "ol.employee"
+    entitySetName: "MSODischargingofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISCHARGING_OFFICER"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "DISCHARGING_OFFICER"
+    name: "dischargingofficer"
+
+  disposition:
+    fqn: "ol.disposition"
+    entitySetName: "MSODisposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISPOSITION"
+      criminaljustice.disposition:
+        type: "criminaljustice.disposition"
+        column: "DISPOSITION"
+      general.datetime:
+        type: "general.datetime"
+        column: "DISPOSITION_DATE"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+    name: "disposition"
+
+  bond:
+    fqn: "ol.bond"
+    entitySetName: "MSOBond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "BOND_AMOUNT"
+      criminaljustice.bailbondamount:
+        type: "criminaljustice.bailbondamount"
+        column: "BOND_AMOUNT"
+    name: "bond"
+
+  case:
+    fqn: "justice.case"
+    entitySetName: "MSOCase"
+    propertyDefinitions:
+      j.CaseNumberText:
+        type: "j.CaseNumberText"
+        column: "CASE_PK"
+      justice.courtcasenumber:
+        type: "justice.courtcasenumber"
+        column: "CASE_PK"
+    name: "case"
+
+associationDefinitions:
+  relatedto:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedto"
+    src: "charge"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_relatedto"
+    name: "relatedto"
+
+  involvedin:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedin"
+    src: "dischargingofficer"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_involvedin"
+    name: "involvedin"
+
+  registeredfor:
+    fqn: "ol.registeredfor"
+    entitySetName: "MSORegisteredfor"
+    src: "chargeevent"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_registeredfor"
+    name: "registeredfor"
+
+  bondset:
+    fqn: "ol.bondset"
+    entitySetName: "MSOBondset"
+    src: "jailstay"
+    dst: "bond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_bondset"
+    name: "bondset"
+
+  appearsin:
+    fqn: "ol.appearsin"
+    entitySetName: "MSOAppearsin"
+    src: "jailstay"
+    dst: "case"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_appearsin"
+    name: "appearsin"
+
+  clearedby:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedby"
+    src: "charge"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby"
+    name: "clearedby"
+

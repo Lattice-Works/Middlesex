@@ -1,0 +1,436 @@
+entityDefinitions:
+  jailstay:
+    fqn: "ol.jailstay"
+    entitySetName: "MSOJailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SYSID"
+      ol.class:
+        type: "ol.class"
+        column: "CURRENT_CLASS"
+      ol.releasedatetime:
+        type: "ol.releasedatetime"
+        column: "RELDATE"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+      criminaljustice.releasetype:
+        type: "criminaljustice.releasetype"
+        column: "RELTYPE"
+      ol.admissiontype:
+        type: "ol.admissiontype"
+        column: "ADTYPE"
+      ol.commitdatetime:
+        type: "ol.commitdatetime"
+        column: "COMDATE"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+    name: "jailstay"
+
+  person:
+    fqn: "general.person"
+    entitySetName: "MSOPerson"
+    propertyDefinitions:
+      nc.SubjectIdentification:
+        type: "nc.SubjectIdentification"
+        column: "PCP"
+      nc.PersonGivenName:
+        type: "nc.PersonGivenName"
+        column: "FIRSTNAM"
+      nc.PersonSurName:
+        type: "nc.PersonSurName"
+        column: "LASTNAME"
+      nc.SSN:
+        type: "nc.SSN"
+        column: "SSNUM"
+      nc.PersonSex:
+        type: "nc.PersonSex"
+        column: "SEX"
+      nc.PersonSuffix:
+        type: "nc.PersonSuffix"
+        column: "AFFIX"
+      nc.PersonBirthDate:
+        type: "nc.PersonBirthDate"
+        column: "BIRTH"
+        transforms:
+        - !<transforms.DateTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+      nc.PersonEthnicity:
+        type: "nc.PersonEthnicity"
+        column: "ETHNICITY"
+      nc.PersonRace:
+        type: "nc.PersonRace"
+        column: "RACE"
+      nc.PersonMiddleName:
+        type: "nc.PersonMiddleName"
+        column: "MIDDLE"
+      ol.idnumber:
+        type: "ol.idnumber"
+        column: "FBI"
+    name: "person"
+
+  temporaryrelease:
+    fqn: "ol.temporaryrelease"
+    entitySetName: "MSOTemporaryrelease"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "RELSTDT"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "RELSTDT"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+      ol.datetimeend:
+        type: "ol.datetimeend"
+        column: "RELRNDT"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+      ol.projectedenddatetime:
+        type: "ol.projectedenddatetime"
+        column: "RELDBDATE"
+    name: "temporaryrelease"
+
+  releaseofficer:
+    fqn: "ol.employee"
+    entitySetName: "MSOReleaseofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "RELOFF"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "RELOFF"
+    name: "releaseofficer"
+
+  dnatest:
+    fqn: "ol.medicaltest"
+    entitySetName: "MSODnatest"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "DNA_SAMPLE_DATE"
+      ol.datetimeadministered:
+        type: "ol.datetimeadministered"
+        column: "DNA_SAMPLE_DATE"
+        transforms:
+        - !<transforms.DateAsDateTimeTransform>
+          pattern: ["yyyy-MM-dd"]
+          timezone: "America/New_York"
+      ol.status:
+        type: "ol.status"
+        column: "DNA_SAMPLE_STATUS"
+    name: "dnatest"
+
+  sentence:
+    fqn: "ol.sentence"
+    entitySetName: "MSOSentence"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SENTENCE"
+      ol.notes:
+        type: "ol.notes"
+        column: "SENTENCE"
+    name: "sentence"
+
+  officer:
+    fqn: "ol.employee"
+    entitySetName: "MSOOfficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "IDOFF"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "IDOFF"
+    name: "officer"
+
+  dnaofficer:
+    fqn: "ol.employee"
+    entitySetName: "MSODnaofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DNA_SAMPLE_OFFICER"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "DNA_SAMPLE_OFFICER"
+    name: "dnaofficer"
+
+  committingofficer:
+    fqn: "ol.employee"
+    entitySetName: "MSOCommittingofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "COMOFF"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "COMOFF"
+    name: "committingofficer"
+
+  committingcounty:
+    fqn: "ol.location"
+    entitySetName: "MSOCommittingcounty"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "COUNTY"
+      ol.county:
+        type: "ol.county"
+        column: "COUNTY"
+    name: "committingcounty"
+
+  releaselocation:
+    fqn: "ol.location"
+    entitySetName: "MSOReleaselocation"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "RELLOC"
+      location.name:
+        type: "location.name"
+        column: "RELLOC"
+      general.notes:
+        type: "general.notes"
+        column: "RELADDR1"
+    name: "releaselocation"
+
+  immigrationstatus:
+    fqn: "ol.immigrationstatus"
+    entitySetName: "MSOImmigrationstatus"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "INS"
+      ol.status:
+        type: "ol.status"
+        column: "INS"
+    name: "immigrationstatus"
+
+  timeserved:
+    fqn: "ol.jailstaylength"
+    entitySetName: "MSOTimeserved"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SERVED"
+      criminaljustice.timeserveddays:
+        type: "criminaljustice.timeserveddays"
+        column: "SERVED"
+    name: "timeserved"
+
+  persondetails:
+    fqn: "ol.persondetails"
+    entitySetName: "MSOPersondetails"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "PCP"
+      person.maritalstatus:
+        type: "person.maritalstatus"
+        column: "MARITAL"
+      person.ageatevent:
+        type: "person.ageatevent"
+        column: "AGE"
+    name: "persondetails"
+
+  persondetailscriminaljustice:
+    fqn: "ol.persondetailscriminaljustice"
+    entitySetName: "MSOPersondetailscriminaljustice"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SENTENCED_AS_ADULT"
+      criminaljustice.treatasadult:
+        type: "criminaljustice.treatasadult"
+        column: "SENTENCED_AS_ADULT"
+    name: "persondetailscriminaljustice"
+
+associationDefinitions:
+  has:
+    fqn: "ol.has"
+    entitySetName: "MSOHas"
+    src: "person"
+    dst: "persondetails"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_has"
+    name: "has"
+
+  has2:
+    fqn: "ol.has"
+    entitySetName: "MSOHas"
+    src: "person"
+    dst: "persondetailscriminaljustice"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_has2"
+    name: "has2"
+
+  sentencedwith:
+    fqn: "ol.sentencedwith"
+    entitySetName: "MSOSentencedWith"
+    src: "person"
+    dst: "sentence"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_sentencedwith"
+    name: "sentencedwith"
+
+  resultsin:
+    fqn: "ol.resultsin"
+    entitySetName: "MSOResultsIn"
+    src: "sentence"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_resultsin"
+    name: "resultsin"
+
+  subjectof:
+    fqn: "ol.subjectof"
+    entitySetName: "MSOSubjectof"
+    src: "person"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_subjectof"
+    name: "subjectof"
+
+  subjectof2:
+    fqn: "ol.subjectof"
+    entitySetName: "MSOSubjectof"
+    src: "person"
+    dst: "dnatest"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_subjectof2"
+    name: "subjectof2"
+
+  reported:
+    fqn: "ol.reported"
+    entitySetName: "MSOReported"
+    src: "person"
+    dst: "immigrationstatus"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "assn_reported"
+    name: "reported"
+
+  involvedin:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedin"
+    src: "officer"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_involvedin"
+    name: "involvedin"
+
+  involvedin2:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedin"
+    src: "releaseofficer"
+    dst: "temporaryrelease"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_involvedin2"
+    name: "involvedin2"
+
+  involvedin3:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedin"
+    src: "committingofficer"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_involvedin3"
+    name: "involvedin3"
+
+  locatedat:
+    fqn: "ol.locatedat"
+    entitySetName: "MSOLocatedat"
+    src: "committingofficer"
+    dst: "committingcounty"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_locatedat"
+    name: "locatedat"
+
+  locatedat2:
+    fqn: "ol.locatedat"
+    entitySetName: "MSOLocatedat"
+    src: "temporaryrelease"
+    dst: "releaselocation"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_locatedat2"
+    name: "locatedat2"
+
+  committedby:
+    fqn: "ol.committedby"
+    entitySetName: "MSOCommittedby"
+    src: "person"
+    dst: "committingofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_committedby"
+    name: "committedby"
+
+  oflength:
+    fqn: "ol.oflength"
+    entitySetName: "MSOOflength"
+    src: "jailstay"
+    dst: "timeserved"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_oflength"
+    name: "oflength"
+
+  collectedby:
+    fqn: "ol.collectedby"
+    entitySetName: "MSOCollectedby"
+    src: "dnatest"
+    dst: "dnaofficer"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "assn_collectedby"
+    name: "collectedby"
+
+  partof:
+    fqn: "ol.partof"
+    entitySetName: "MSOPartof"
+    src: "temporaryrelease"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_partof"
+    name: "partof"
+

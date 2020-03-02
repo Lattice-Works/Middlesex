@@ -1,0 +1,140 @@
+entityDefinitions:
+  charge:
+    fqn: "ol.offense"
+    entitySetName: "MSOCharge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.eventcount:
+        type: "ol.eventcount"
+        column: "CHARGE_ORDER"
+      ol.type:
+        type: "ol.type"
+        column: "CHARGE_TYPE_ID"
+    name: "charge"
+
+  chargeevent:
+    fqn: "ol.chargeevent"
+    entitySetName: "MSOChargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.code:
+        type: "ol.code"
+        column: "OFFENSE_CODE"
+      ol.description:
+        type: "ol.description"
+        column: "OFFENSE_DESCRIPTION"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "OFFENSE_DATE"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+      date.completeddatetime:
+        type: "date.completeddatetime"
+        column: "DATE_ADDED"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+    name: "chargeevent"
+
+  dischargingofficer:
+    fqn: "ol.employee"
+    entitySetName: "MSODischargingofficer"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISCHARGING_OFFICER"
+      publicsafety.employeeid:
+        type: "publicsafety.employeeid"
+        column: "DISCHARGING_OFFICER"
+    name: "dischargingofficer"
+
+  disposition:
+    fqn: "ol.disposition"
+    entitySetName: "MSODisposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISPOSITION"
+      criminaljustice.disposition:
+        type: "criminaljustice.disposition"
+        column: "DISPOSITION"
+      general.datetime:
+        type: "general.datetime"
+        column: "DISPOSITION_DATE"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+    name: "disposition"
+
+  dnatest:
+    fqn: "ol.medicaltest"
+    entitySetName: "MSODnatest"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "DNA_SAMPLE_DATE"
+      ol.datetimeadministered:
+        type: "ol.datetimeadministered"
+        column: "DNA_SAMPLE_DATE"
+        transforms:
+        - !<transforms.DateTimeTransform>
+          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
+          timezone: "America/New_York"
+      ol.value:
+        type: "ol.value"
+        column: "DNA_SAMPLE_STATUS"
+    name: "dnatest"
+
+associationDefinitions:
+  clearedby:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedby"
+    src: "charge"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby"
+    name: "clearedby"
+
+  involvedin:
+    fqn: "ol.involvedin"
+    entitySetName: "MSOInvolvedin"
+    src: "dischargingofficer"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_involvedin"
+    name: "involvedin"
+
+  relatedto:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedto"
+    src: "dnatest"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_relatedto"
+    name: "relatedto"
+
+  registeredfor:
+    fqn: "ol.registeredfor"
+    entitySetName: "MSORegisteredfor"
+    src: "chargeevent"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_registeredfor"
+    name: "registeredfor"
+
