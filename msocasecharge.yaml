@@ -1,4 +1,14 @@
 entityDefinitions:
+
+  person:
+    fqn: "nc.SubjectIdentification"
+    entitySetName: "MSOInmates"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "PCP"
+    name: "person"
+ 
   jailstay:
     fqn: "ol.jailstay"
     entitySetName: "MSOJailstay"
@@ -55,18 +65,6 @@ entityDefinitions:
         column: "COMMENTS"
     name: "chargeevent"
 
-  dischargingofficer:
-    fqn: "ol.employee"
-    entitySetName: "MSODischargingofficer"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "DISCHARGING_OFFICER"
-      publicsafety.employeeid:
-        type: "publicsafety.employeeid"
-        column: "DISCHARGING_OFFICER"
-    name: "dischargingofficer"
-
   disposition:
     fqn: "ol.disposition"
     entitySetName: "MSODisposition"
@@ -122,17 +120,6 @@ associationDefinitions:
         column: "assn_relatedto"
     name: "relatedto"
 
-  involvedin:
-    fqn: "ol.involvedin"
-    entitySetName: "MSOInvolvedin"
-    src: "dischargingofficer"
-    dst: "charge"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "assn_involvedin"
-    name: "involvedin"
-
   registeredfor:
     fqn: "ol.registeredfor"
     entitySetName: "MSORegisteredfor"
@@ -177,3 +164,13 @@ associationDefinitions:
         column: "assn_clearedby"
     name: "clearedby"
 
+  chargedwith:
+    fqn: "ol.chargedwith"
+    entitySetName: "MSOChargedWith"
+    src: "person"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_chargedwith"
+    name: "chargedwith"

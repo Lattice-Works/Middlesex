@@ -15,6 +15,10 @@ db_password = creds['password']
 
 middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_password}@atlas.openlattice.com:30001/{db_name}',connect_args={'sslmode':'require'})
 
+# booking query needed for join on SYSID to get PCP (person id)
+booking_query = 'select "SYSID", "PCP" from booking;'
+booking_df=pd.read_sql_query(booking_query, middlesex_engine)
+
 case_charge_query = "select * from case_charge;"
 case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
 
@@ -33,6 +37,10 @@ clean_cc['OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'co
 # Strip all whitespace from object (string) columns and remove empty strings ('')
 clean_cc = clean_cc.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 clean_cc.replace('', np.nan, inplace=True)
+
+# Join to booking on SYSID to get PCP (key for inmates)
+clean_cc = clean_cc.set_index('SYSID').join(booking_df[['SYSID','PCP']].set_index('SYSID'))
+clean_cc.reset_index()
 
 # Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
 cc_date_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64]

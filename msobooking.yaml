@@ -102,7 +102,7 @@ entityDefinitions:
 
   releaseofficer:
     fqn: "ol.employee"
-    entitySetName: "MSOReleaseofficer"
+    entitySetName: "MSOOfficer"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
@@ -157,7 +157,7 @@ entityDefinitions:
 
   dnaofficer:
     fqn: "ol.employee"
-    entitySetName: "MSODnaofficer"
+    entitySetName: "MSOOfficer"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
@@ -169,7 +169,7 @@ entityDefinitions:
 
   committingofficer:
     fqn: "ol.employee"
-    entitySetName: "MSOCommittingofficer"
+    entitySetName: "MSOOfficer"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
@@ -350,7 +350,7 @@ associationDefinitions:
     fqn: "ol.involvedin"
     entitySetName: "MSOInvolvedin"
     src: "releaseofficer"
-    dst: "temporaryrelease"
+    dst: "jailstay"
     propertyDefinitions:
       ol.id:
         type: "ol.id"

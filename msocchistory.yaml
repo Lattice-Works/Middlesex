@@ -43,18 +43,6 @@ entityDefinitions:
           timezone: "America/New_York"
     name: "chargeevent"
 
-  dischargingofficer:
-    fqn: "ol.employee"
-    entitySetName: "MSODischargingofficer"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "DISCHARGING_OFFICER"
-      publicsafety.employeeid:
-        type: "publicsafety.employeeid"
-        column: "DISCHARGING_OFFICER"
-    name: "dischargingofficer"
-
   disposition:
     fqn: "ol.disposition"
     entitySetName: "MSODisposition"
@@ -104,17 +92,6 @@ associationDefinitions:
         type: "ol.id"
         column: "assn_clearedby"
     name: "clearedby"
-
-  involvedin:
-    fqn: "ol.involvedin"
-    entitySetName: "MSOInvolvedin"
-    src: "dischargingofficer"
-    dst: "charge"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "assn_involvedin"
-    name: "involvedin"
 
   relatedto:
     fqn: "ol.relatedto"
