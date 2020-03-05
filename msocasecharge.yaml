@@ -31,6 +31,12 @@ entityDefinitions:
       ol.type:
         type: "ol.type"
         column: "CHARGE_TYPE_ID"
+      ol.description:
+        type: "ol.description"
+        column: "OFFENSE_DESCRIPTION"
+      ol.code:
+        type: "ol.code"
+        column: "OFFENSE_CODE"
     name: "charge"
 
   chargeevent:
@@ -40,26 +46,9 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "CHARGE_PK"
-      ol.code:
-        type: "ol.code"
-        column: "OFFENSE_CODE"
-      ol.description:
-        type: "ol.description"
-        column: "OFFENSE_DESCRIPTION"
       ol.datetimestart:
         type: "ol.datetimestart"
         column: "OFFENSE_DATE"
-        transforms:
-        - !<transforms.DateTimeTransform>
-          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
-          timezone: "America/New_York"
-      date.completeddatetime:
-        type: "date.completeddatetime"
-        column: "DATE_ADDED"
-        transforms:
-        - !<transforms.DateTimeTransform>
-          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
-          timezone: "America/New_York"
       ol.notes:
         type: "ol.notes"
         column: "COMMENTS"
@@ -75,13 +64,6 @@ entityDefinitions:
       criminaljustice.disposition:
         type: "criminaljustice.disposition"
         column: "DISPOSITION"
-      general.datetime:
-        type: "general.datetime"
-        column: "DISPOSITION_DATE"
-        transforms:
-        - !<transforms.DateTimeTransform>
-          pattern: ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss.SSS"]
-          timezone: "America/New_York"
     name: "disposition"
 
   bond:
@@ -162,6 +144,9 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_clearedby"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
     name: "clearedby"
 
   chargedwith:
@@ -174,3 +159,25 @@ associationDefinitions:
         type: "ol.id"
         column: "assn_chargedwith"
     name: "chargedwith"
+  
+  clearedby2:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedBy"
+    src: "chargeevent"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby2"
+    name: "clearedby2"
+  
+  chargedwith2:
+    fqn: "ol.chargedwith"
+    entitySetName: "MSOChargedWith"
+    src: "person"
+    dst: "chargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_chargedwith2"
+    name: "chargedwith2"

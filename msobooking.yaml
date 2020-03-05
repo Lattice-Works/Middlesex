@@ -6,16 +6,7 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "SYSID"
-      ol.class:
-        type: "ol.class"
-        column: "CURRENT_CLASS"
-      ol.releasedatetime:
-        type: "ol.releasedatetime"
         column: "RELDATE"
-        transforms:
-        - !<transforms.DateAsDateTimeTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
       criminaljustice.releasetype:
         type: "criminaljustice.releasetype"
         column: "RELTYPE"
@@ -25,15 +16,11 @@ entityDefinitions:
       ol.commitdatetime:
         type: "ol.commitdatetime"
         column: "COMDATE"
-        transforms:
-        - !<transforms.DateAsDateTimeTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
     name: "jailstay"
 
   person:
     fqn: "general.person"
-    entitySetName: "MSOPerson"
+    entitySetName: "MSOInmates"
     propertyDefinitions:
       nc.SubjectIdentification:
         type: "nc.SubjectIdentification"
@@ -56,10 +43,6 @@ entityDefinitions:
       nc.PersonBirthDate:
         type: "nc.PersonBirthDate"
         column: "BIRTH"
-        transforms:
-        - !<transforms.DateTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
       nc.PersonEthnicity:
         type: "nc.PersonEthnicity"
         column: "ETHNICITY"
@@ -69,10 +52,19 @@ entityDefinitions:
       nc.PersonMiddleName:
         type: "nc.PersonMiddleName"
         column: "MIDDLE"
-      ol.idnumber:
-        type: "ol.idnumber"
-        column: "FBI"
     name: "person"
+
+  fbinumber:
+    fqn: "ol.identification"
+    entitySetName: "MSOFBINumbers"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "FBI"
+      ol.stringnumber:
+        type:  "ol.stringnumber"
+        column: "FBI"
+    name: "fbinumber"
 
   temporaryrelease:
     fqn: "ol.temporaryrelease"
@@ -84,17 +76,9 @@ entityDefinitions:
       ol.datetimestart:
         type: "ol.datetimestart"
         column: "RELSTDT"
-        transforms:
-        - !<transforms.DateAsDateTimeTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
       ol.datetimeend:
         type: "ol.datetimeend"
         column: "RELRNDT"
-        transforms:
-        - !<transforms.DateAsDateTimeTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
       ol.projectedenddatetime:
         type: "ol.projectedenddatetime"
         column: "RELDBDATE"
@@ -112,9 +96,9 @@ entityDefinitions:
         column: "RELOFF"
     name: "releaseofficer"
 
-  dnatest:
+  dnasample:
     fqn: "ol.medicaltest"
-    entitySetName: "MSODnatest"
+    entitySetName: "MSODnaSample"
     propertyDefinitions:
       general.id:
         type: "general.id"
@@ -122,7 +106,7 @@ entityDefinitions:
       ol.status:
         type: "ol.status"
         column: "DNA_SAMPLE_STATUS"
-    name: "dnatest"
+    name: "dnasample"
 
   sentence:
     fqn: "ol.sentence"
@@ -134,6 +118,9 @@ entityDefinitions:
       ol.notes:
         type: "ol.notes"
         column: "SENTENCE"
+      datetime.received:
+        type: "datetime.received"
+        column: "COMDATE"
     name: "sentence"
 
   officer:
@@ -250,28 +237,40 @@ entityDefinitions:
         column: "SENTENCED_AS_ADULT"
     name: "persondetailscriminaljustice"
 
+  facility:
+    fqn: "ol.facility"
+    entitySetName: "MSOFacilities"
+    propertyDefinitions:
+      general.stringid:
+        type: "general.stringid"
+        column: "CURRENT_CLASS"
+      location.name:
+        type: "location.name"
+        column: "CURRENT_CLASS"  
+    name: "facility"
+
 associationDefinitions:
-  has:
-    fqn: "ol.has"
-    entitySetName: "MSOHas"
+  reported:
+    fqn: "ol.reported"
+    entitySetName: "MSOReported"
     src: "person"
     dst: "persondetails"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "assn_has"
-    name: "has"
+        column: "assn_reported"
+    name: "reported"
 
-  has2:
-    fqn: "ol.has"
+  reported2:
+    fqn: "ol.reported2"
     entitySetName: "MSOHas"
     src: "person"
     dst: "persondetailscriminaljustice"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "assn_has2"
-    name: "has2"
+        column: "assn_reported2"
+    name: "reported2"
 
   sentencedwith:
     fqn: "ol.sentencedwith"
@@ -310,7 +309,7 @@ associationDefinitions:
     fqn: "ol.subjectof"
     entitySetName: "MSOSubjectof"
     src: "person"
-    dst: "dnatest"
+    dst: "dnasample"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
@@ -320,7 +319,7 @@ associationDefinitions:
         column: "DNA_SAMPLE_DATE"
     name: "subjectof2"
 
-  reported:
+  reported4:
     fqn: "ol.reported"
     entitySetName: "MSOReported"
     src: "person"
@@ -328,8 +327,8 @@ associationDefinitions:
     propertyDefinitions:
       general.id:
         type: "general.id"
-        column: "assn_reported"
-    name: "reported"
+        column: "assn_reported4"
+    name: "reported4"
 
   involvedin:
     fqn: "ol.involvedin"
@@ -411,7 +410,7 @@ associationDefinitions:
   collectedby:
     fqn: "ol.collectedby"
     entitySetName: "MSOCollectedby"
-    src: "dnatest"
+    src: "dnasample"
     dst: "dnaofficer"
     propertyDefinitions:
       general.id:
@@ -429,4 +428,26 @@ associationDefinitions:
         type: "ol.id"
         column: "assn_partof"
     name: "partof"
+
+  reported3:
+    fqn: "ol.reported"
+    entitySetName: "MSOReported"
+    src: "person"
+    dst: "fbinumber"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_reported3"
+    name: "reported3"
+  
+  locatedat3:
+    fqn: "ol.locatedat"
+    entitySetName: "MSOLocatedAt"
+    src: "jailstay"
+    dst: "facility"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_locatedat3"
+    name: "locatedat3"
 
