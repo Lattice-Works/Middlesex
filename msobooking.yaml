@@ -118,14 +118,7 @@ entityDefinitions:
     propertyDefinitions:
       general.id:
         type: "general.id"
-        column: "DNA_SAMPLE_DATE"
-      ol.datetimeadministered:
-        type: "ol.datetimeadministered"
-        column: "DNA_SAMPLE_DATE"
-        transforms:
-        - !<transforms.DateAsDateTimeTransform>
-          pattern: ["yyyy-MM-dd"]
-          timezone: "America/New_York"
+        column: "DNA_SAMPLE_STATUS"
       ol.status:
         type: "ol.status"
         column: "DNA_SAMPLE_STATUS"
@@ -322,6 +315,9 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_subjectof2"
+      date.completeddatetime:
+        type: "date.completeddatetime"
+        column: "DNA_SAMPLE_DATE"
     name: "subjectof2"
 
   reported:
