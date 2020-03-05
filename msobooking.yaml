@@ -45,7 +45,7 @@ entityDefinitions:
         column: "BIRTH"
       nc.PersonEthnicity:
         type: "nc.PersonEthnicity"
-        column: "ETHNICITY"
+        column: "HISPANIC"
       nc.PersonRace:
         type: "nc.PersonRace"
         column: "RACE"
@@ -339,6 +339,9 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_involvedin"
+      ol.role:
+        type: "ol.role"
+        column: "ROLE"
     name: "involvedin"
 
   involvedin2:
@@ -350,6 +353,12 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_involvedin2"
+      ol.role:
+        type: "ol.role"
+        column: "ROLE"
+      ol.roledescription:
+        type: "ol.roledescription"
+        column: "REL_ROLE_DESCRIPTION"
     name: "involvedin2"
 
   involvedin3:
@@ -361,6 +370,12 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_involvedin3"
+      ol.role:
+        type: "ol.role"
+        column: "ROLE"
+      ol.roledescription:
+        type: "ol.roledescription"
+        column: "COM_ROLE_DESCRIPTION"
     name: "involvedin3"
 
   locatedat:

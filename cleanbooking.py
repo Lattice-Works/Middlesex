@@ -36,6 +36,31 @@ clean_booking['SERVED'] = clean_booking['SERVED'].astype('Int64')
 clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
 clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
 
+# Map SEX values to new values
+clean_booking['SEX'] = clean_booking['SEX'].map({'M': "Male", "m": "Male", 'F': "Female", "C": "Unknown", "B": "Unknown", "H": "Unknown", "N": "Unknown", "]":"Unknown"})
+
+# Set ambiguous values in RACE to Unknown and set W-White B-Black
+clean_booking.loc[clean_booking['RACE'].isin(['H','U','D1','D3','A','D2','Z','D4','D7','AS','CV','AM']), 'RACE'] = 'Unknown'
+clean_booking['RACE'] =clean_booking['RACE'].map({"W": "White", "B":"Black", "Unknown":"Unknown"})
+
+# Map Hispanic to Standard Values
+clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"Y":"Hispanic", "N":"Non-Hispanic"})
+
+# Add value for datasource
+clean_booking['DATASOURCE'] = "Middlesex County Jail"
+
+# Officer Roles
+clean_booking.loc[clean_booking['IDOFF'].notna(), 'ROLE'] = 'Officer'
+
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'DNA_ROLE_DESCRIPTION'] = 'DNA'
+
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'COM_ROLE_DESCRIPTION'] = 'Committing'
+
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'REL_ROLE_DESCRIPTION'] = 'Releasing'
+
 # Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
 date_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
 
