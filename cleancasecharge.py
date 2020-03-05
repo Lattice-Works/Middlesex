@@ -42,11 +42,19 @@ clean_cc.replace('', np.nan, inplace=True)
 clean_cc = clean_cc.set_index('SYSID').join(booking_df[['SYSID','PCP']].set_index('SYSID'))
 clean_cc.reset_index()
 
-# Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
-cc_date_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64]
 
-for col in cc_date_columns:
-    clean_cc[col] = clean_cc[col].dt.floor('d')
+# Prepare dates for SQL
+# First select those which need to be dates on backend and add to date_columns
+# Then select those which are np.datetime64 in pandas (and possibly others) and localize
+date_columns = ['DISPOSITION_DATE']
+
+for col in date_columns:
+   clean_cc[col] = clean_cc[col].dt.strftime('%Y-%m-%d')
+
+datetime_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64    ]
+
+for col in datetime_columns:
+    clean_cc[col] = pd.to_datetime(clean_cc[col], errors='coerce').dt.tz_localiz    e("America/New_York")
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):

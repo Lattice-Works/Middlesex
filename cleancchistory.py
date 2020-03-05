@@ -31,11 +31,19 @@ clean_cc_hist_hist = cc_history_df[cc_hist_cols]
 clean_cc_hist = clean_cc_hist.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 clean_cc_hist.replace('', np.nan, inplace=True)
 
-# Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
-cc_hist_date_columns = [k for (k,v) in clean_cc_hist.dtypes.items() if v.type == np.datetime64]
+# Prepare dates for SQL
+# First select those which need to be dates on backend and add to date_columns
+# Then select those which are np.datetime64 in pandas (and possibly others) and localize
+date_columns = ['DNA_SAMPLE_DATE','DISPOSITION_DATE']
 
-for col in cc_hist_date_columns:
-    clean_cc_hist[col] = clean_cc_hist[col].dt.floor('d')
+for col in date_columns:
+   clean_cc_hist[col] = clean_cc_hist[col].dt.strftime('%Y-%m-%d')
+
+datetime_columns = [k for (k,v) in clean_cc_hist.dtypes.items() if v.type == np.datetime64    ]
+
+for col in datetime_columns:
+    clean_cc_hist[col] = pd.to_datetime(clean_cc_hist[col], errors='coerce').dt.tz_localiz    e("America/New_York")
+
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):

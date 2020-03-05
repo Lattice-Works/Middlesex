@@ -61,11 +61,18 @@ clean_booking.loc[clean_booking['COMOFF'].notna(), 'COM_ROLE_DESCRIPTION'] = 'Co
 clean_booking.loc[clean_booking['RELOFF'].notna(), 'ROLE'] = 'Officer'
 clean_booking.loc[clean_booking['RELOFF'].notna(), 'REL_ROLE_DESCRIPTION'] = 'Releasing'
 
-# Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
-date_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
+# Prepare dates for SQL
+# First select those which need to be dates on backend and add to date_columns
+# Then select those which are np.datetime64 in pandas (and possibly others) and localize
+date_columns = ['BIRTH','DNA_SAMPLE_DATE']
 
 for col in date_columns:
-    clean_booking[col] = clean_booking[col].dt.floor('d')
+    clean_booking[col] = clean_booking[col].dt.strftime('%Y-%m-%d')
+
+datetime_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
+
+for col in datetime_columns:
+    clean_booking[col] = pd.to_datetime(clean_booking[col], errors='coerce').dt.tz_localize("America/New_York")
 
 
 # Functions to make association hash and make columns from those
