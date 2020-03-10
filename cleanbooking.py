@@ -40,8 +40,8 @@ clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'
 clean_booking['SEX'] = clean_booking['SEX'].map({'M': "Male", "m": "Male", 'F': "Female", "C": "Unknown", "B": "Unknown", "H": "Unknown", "N": "Unknown", "]":"Unknown"})
 
 # Set ambiguous values in RACE to Unknown and set W-White B-Black
-clean_booking.loc[clean_booking['RACE'].isin(['H','U','D1','D3','A','D2','Z','D4','D7','AS','CV','AM']), 'RACE'] = 'Unknown'
-clean_booking['RACE'] =clean_booking['RACE'].map({"W": "White", "B":"Black", "Unknown":"Unknown"})
+clean_booking.loc[clean_booking['RACE'].isin(['H','U','D1','D3','D2','Z','D4','D7','AS','CV','AM']), 'RACE'] = 'Unknown'
+clean_booking['RACE'] =clean_booking['RACE'].map({"W": "White", "B":"Black","A":"Asian", "Unknown":"Unknown"})
 
 # Map Hispanic to Standard Values
 clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"Y":"Hispanic", "N":"Non-Hispanic"})

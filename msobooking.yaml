@@ -6,6 +6,8 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "SYSID"
+      ol.releasedatetime:
+        type: "ol.releasedatetime"
         column: "RELDATE"
       criminaljustice.releasetype:
         type: "criminaljustice.releasetype"
@@ -16,6 +18,9 @@ entityDefinitions:
       ol.commitdatetime:
         type: "ol.commitdatetime"
         column: "COMDATE"
+      ol.datasource:
+        type: "ol.datasource"
+        column: "DATASOURCE"    
     name: "jailstay"
 
   person:
@@ -186,17 +191,17 @@ entityDefinitions:
         column: "RELADDR1"
     name: "releaselocation"
 
-  immigrationstatus:
-    fqn: "ol.immigrationstatus"
-    entitySetName: "MSOImmigrationstatus"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "INS"
-      ol.status:
-        type: "ol.status"
-        column: "INS"
-    name: "immigrationstatus"
+    #immigrationstatus:
+    #  fqn: "ol.immigrationstatus"
+    #  entitySetName: "MSOImmigrationstatus"
+    #  propertyDefinitions:
+    #    ol.id:
+    #      type: "ol.id"
+    #      column: "INS"
+    #    ol.status:
+    #      type: "ol.status"
+    #      column: "INS"
+    #  name: "immigrationstatus"
 
   timeserved:
     fqn: "ol.jailstaylength"
@@ -263,7 +268,7 @@ associationDefinitions:
 
   reported2:
     fqn: "ol.reported2"
-    entitySetName: "MSOHas"
+    entitySetName: "MSOReported2"
     src: "person"
     dst: "persondetailscriminaljustice"
     propertyDefinitions:
@@ -319,16 +324,16 @@ associationDefinitions:
         column: "DNA_SAMPLE_DATE"
     name: "subjectof2"
 
-  reported4:
-    fqn: "ol.reported"
-    entitySetName: "MSOReported"
-    src: "person"
-    dst: "immigrationstatus"
-    propertyDefinitions:
-      general.id:
-        type: "general.id"
-        column: "assn_reported4"
-    name: "reported4"
+    #reported4:
+    #  fqn: "ol.reported"
+    #  entitySetName: "MSOReported"
+    #  src: "person"
+    #  dst: "immigrationstatus"
+    #  propertyDefinitions:
+    #    general.id:
+    #      type: "general.id"
+    #      column: "assn_reported4"
+    #  name: "reported4"
 
   involvedin:
     fqn: "ol.involvedin"

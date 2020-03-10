@@ -94,7 +94,7 @@ associationDefinitions:
   relatedto:
     fqn: "ol.relatedto"
     entitySetName: "MSORelatedto"
-    src: "charge"
+    src: "chargeevent"
     dst: "jailstay"
     propertyDefinitions:
       ol.id:
