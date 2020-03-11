@@ -24,13 +24,13 @@ entityDefinitions:
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "CHARGE_PK"
+        column: "OFFENSE_CODE"
       ol.eventcount:
         type: "ol.eventcount"
         column: "CHARGE_ORDER"
-      ol.type:
-        type: "ol.type"
-        column: "CHARGE_TYPE_ID"
+        # ol.type:
+        #   type: "ol.type"
+        #   column: "CHARGE_TYPE_ID"
       ol.description:
         type: "ol.description"
         column: "OFFENSE_DESCRIPTION"
