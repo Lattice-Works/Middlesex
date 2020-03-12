@@ -1,0 +1,112 @@
+entityDefinitions:
+  charge:
+    fqn: "ol.offense"
+    entitySetName: "MSOCharge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "OFFENSE_CODE"
+      ol.eventcount:
+        type: "ol.eventcount"
+        column: "CHARGE_ORDER"
+      # ol.type:
+      #   type: "ol.type"
+      #   column: "CHARGE_TYPE_ID"
+      ol.code:
+        type: "ol.code"
+        column: "OFFENSE_CODE"
+      ol.description:
+        type: "ol.description"
+        column: "OFFENSE_DESCRIPTION"
+    name: "charge"
+
+  chargeevent:
+    fqn: "ol.chargeevent"
+    entitySetName: "MSOChargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "OFFENSE_DATE"
+    name: "chargeevent"
+
+  disposition:
+    fqn: "ol.disposition"
+    entitySetName: "MSODisposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISPOSITION"
+      criminaljustice.disposition:
+        type: "criminaljustice.disposition"
+        column: "DISPOSITION"
+    name: "disposition"
+
+  dnatest:
+    fqn: "ol.medicaltest"
+    entitySetName: "MSODnatest"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "DNA_SAMPLE_STATUS"
+      ol.value:
+        type: "ol.value"
+        column: "DNA_SAMPLE_STATUS"
+    name: "dnatest"
+
+associationDefinitions:
+  clearedby:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedby"
+    src: "charge"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
+    name: "clearedby"
+
+  clearedby2:
+    fqn: "ol.clearedby2"
+    entitySetName: "MSOClearedby"
+    src: "chargeevent"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby2"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
+    name: "clearedby2"
+    
+  relatedto:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedto"
+    src: "dnatest"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_relatedto"
+      general.date:
+        type: "general.date"
+        column: "DNA_SAMPLE_DATE"
+    name: "relatedto"
+
+  registeredfor:
+    fqn: "ol.registeredfor"
+    entitySetName: "MSORegisteredfor"
+    src: "chargeevent"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_registeredfor"
+    name: "registeredfor"
+

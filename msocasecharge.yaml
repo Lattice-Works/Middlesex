@@ -1,0 +1,186 @@
+entityDefinitions:
+
+  person:
+    fqn: "nc.SubjectIdentification"
+    entitySetName: "MSOInmates"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "PCP"
+    name: "person"
+ 
+  jailstay:
+    fqn: "ol.jailstay"
+    entitySetName: "MSOJailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "SYSID"
+    name: "jailstay"
+
+  charge:
+    fqn: "ol.offense"
+    entitySetName: "MSOCharge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "OFFENSE_CODE"
+      ol.eventcount:
+        type: "ol.eventcount"
+        column: "CHARGE_ORDER"
+        # ol.type:
+        #   type: "ol.type"
+        #   column: "CHARGE_TYPE_ID"
+      ol.description:
+        type: "ol.description"
+        column: "OFFENSE_DESCRIPTION"
+      ol.code:
+        type: "ol.code"
+        column: "OFFENSE_CODE"
+    name: "charge"
+
+  chargeevent:
+    fqn: "ol.chargeevent"
+    entitySetName: "MSOChargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "CHARGE_PK"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "OFFENSE_DATE"
+      ol.notes:
+        type: "ol.notes"
+        column: "COMMENTS"
+    name: "chargeevent"
+
+  disposition:
+    fqn: "ol.disposition"
+    entitySetName: "MSODisposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "DISPOSITION"
+      criminaljustice.disposition:
+        type: "criminaljustice.disposition"
+        column: "DISPOSITION"
+    name: "disposition"
+
+  bond:
+    fqn: "ol.bond"
+    entitySetName: "MSOBond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "BOND_AMOUNT"
+      criminaljustice.bailbondamount:
+        type: "criminaljustice.bailbondamount"
+        column: "BOND_AMOUNT"
+    name: "bond"
+
+  case:
+    fqn: "justice.case"
+    entitySetName: "MSOCase"
+    propertyDefinitions:
+      j.CaseNumberText:
+        type: "j.CaseNumberText"
+        column: "CASE_PK"
+      justice.courtcasenumber:
+        type: "justice.courtcasenumber"
+        column: "CASE_PK"
+    name: "case"
+
+associationDefinitions:
+  relatedto:
+    fqn: "ol.relatedto"
+    entitySetName: "MSORelatedto"
+    src: "chargeevent"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_relatedto"
+    name: "relatedto"
+
+  registeredfor:
+    fqn: "ol.registeredfor"
+    entitySetName: "MSORegisteredfor"
+    src: "chargeevent"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_registeredfor"
+    name: "registeredfor"
+
+  bondset:
+    fqn: "ol.bondset"
+    entitySetName: "MSOBondset"
+    src: "jailstay"
+    dst: "bond"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_bondset"
+    name: "bondset"
+
+  appearsin:
+    fqn: "ol.appearsin"
+    entitySetName: "MSOAppearsin"
+    src: "jailstay"
+    dst: "case"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_appearsin"
+    name: "appearsin"
+
+  clearedby:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedby"
+    src: "charge"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
+    name: "clearedby"
+
+  chargedwith:
+    fqn: "ol.chargedwith"
+    entitySetName: "MSOChargedWith"
+    src: "person"
+    dst: "charge"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_chargedwith"
+    name: "chargedwith"
+  
+  clearedby2:
+    fqn: "ol.clearedby"
+    entitySetName: "MSOClearedBy"
+    src: "chargeevent"
+    dst: "disposition"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_clearedby2"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
+    name: "clearedby2"
+  
+  chargedwith2:
+    fqn: "ol.chargedwith"
+    entitySetName: "MSOChargedWith"
+    src: "person"
+    dst: "chargeevent"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_chargedwith2"
+    name: "chargedwith2"
