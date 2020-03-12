@@ -2,7 +2,7 @@ import sqlalchemy
 import pandas as pd
 import numpy as np
 import yaml
-from flighttools import flight
+from olpy.flight import Flight
 
 file = "***"
 with open(file) as stream:
@@ -23,7 +23,7 @@ case_charge_query = "select * from case_charge;"
 case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
 
 # Make a flight object from current yaml
-fl2 = flight.Flight()
+fl2 = Flight()
 fl2.deserialize('/Users/nicholas/Clients/Middlesex/msocasecharge.yaml')
 middlesex_cc_fd = fl2.schema
 cc_flight_cols = list(fl2.get_all_columns())
@@ -73,6 +73,5 @@ def make_assn_cols(df, fd):
 make_assn_cols(clean_cc, middlesex_cc_fd)
 
 # Take a sample and make a csv for sample integrations
-clean_cc_sample = clean_cc.sample(1000)
-
-clean_booking_sample.to_csv('cleancasechargesample.csv')
+engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
+clean_cc.to_sql("clean_cc", engine)

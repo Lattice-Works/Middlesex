@@ -119,7 +119,7 @@ entityDefinitions:
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "COMDATE"
+        column: "SENTENCE_PK"
       ol.notes:
         type: "ol.notes"
         column: "SENTENCE"

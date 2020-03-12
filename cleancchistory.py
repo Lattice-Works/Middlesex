@@ -2,7 +2,7 @@ import sqlalchemy
 import pandas as pd
 import numpy as np
 import yaml
-from flighttools import flight
+from olpy.flight import Flight
 
 file = "***"
 with open(file) as stream:
@@ -19,7 +19,7 @@ cc_history_query = "select * from case_charge_history;"
 cc_history_df=pd.read_sql_query(cc_history_query, middlesex_engine)
 
 # Make a flight object from current yaml
-fl = flight.Flight()
+fl = Flight()
 fl.deserialize('/Users/nicholas/Clients/Middlesex/msocchistory.yaml')
 middlesex_cc_hist_fd = fl.schema
 cc_hist_cols = list(fl.get_all_columns())
@@ -61,7 +61,6 @@ def make_assn_cols(df, fd):
 
 make_assn_cols(clean_cc_hist, middlesex_cc_hist_fd)
 
-# Take a sample and make a csv for sample integrations
-clean_cc_hist_sample = clean_cc_hist.sample(1000)
-
-clean_cc_hist_sample.to_csv('cleancchistsample.csv')
+# Take a sample and make a table on test db for sample integrations
+engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
+clean_cc_hist.to_sql("clean_cc_hist", engine)

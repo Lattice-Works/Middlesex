@@ -169,6 +169,9 @@ associationDefinitions:
       ol.id:
         type: "ol.id"
         column: "assn_clearedby2"
+      general.date:
+        type: "general.date"
+        column: "DISPOSITION_DATE"
     name: "clearedby2"
   
   chargedwith2:

@@ -5,13 +5,13 @@ entityDefinitions:
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "CHARGE_PK"
+        column: "OFFENSE_CODE"
       ol.eventcount:
         type: "ol.eventcount"
         column: "CHARGE_ORDER"
-      ol.type:
-        type: "ol.type"
-        column: "CHARGE_TYPE_ID"
+      # ol.type:
+      #   type: "ol.type"
+      #   column: "CHARGE_TYPE_ID"
       ol.code:
         type: "ol.code"
         column: "OFFENSE_CODE"
