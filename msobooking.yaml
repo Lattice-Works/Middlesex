@@ -120,12 +120,15 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "SENTENCE_PK"
-      ol.notes:
-        type: "ol.notes"
+      ol.type:
+        type: "ol.type"
         column: "SENTENCE"
       datetime.received:
         type: "datetime.received"
         column: "COMDATE"
+      criminaljustice.treatasadult:
+        type: "criminaljustice.treatasadult"
+        column: "SENTENCED_AS_ADULT"
     name: "sentence"
 
   officer:
@@ -230,18 +233,6 @@ entityDefinitions:
         column: "AGE"
     name: "persondetails"
 
-  persondetailscriminaljustice:
-    fqn: "ol.persondetailscriminaljustice"
-    entitySetName: "MSOPersondetailscriminaljustice"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "SENTENCED_AS_ADULT"
-      criminaljustice.treatasadult:
-        type: "criminaljustice.treatasadult"
-        column: "SENTENCED_AS_ADULT"
-    name: "persondetailscriminaljustice"
-
   facility:
     fqn: "ol.facility"
     entitySetName: "MSOFacilities"
@@ -261,21 +252,10 @@ associationDefinitions:
     src: "person"
     dst: "persondetails"
     propertyDefinitions:
-      ol.id:
-        type: "ol.id"
+      general.id:
+        type: "general.id"
         column: "assn_reported"
     name: "reported"
-
-  reported2:
-    fqn: "ol.reported2"
-    entitySetName: "MSOReported"
-    src: "person"
-    dst: "persondetailscriminaljustice"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "assn_reported2"
-    name: "reported2"
 
   sentencedwith:
     fqn: "ol.sentencedwith"
@@ -455,8 +435,8 @@ associationDefinitions:
     src: "person"
     dst: "fbinumber"
     propertyDefinitions:
-      ol.id:
-        type: "ol.id"
+      general.id:
+        type: "general.id"
         column: "assn_reported3"
     name: "reported3"
   

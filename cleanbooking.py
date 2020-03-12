@@ -36,11 +36,15 @@ clean_booking['SERVED'] = clean_booking['SERVED'].astype('Int64')
 clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
 clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
 
-# Select columns which are np.datetime64 and make  them into dates (dt.floor('d'))
-date_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
+date_columns = ['BIRTH']
 
 for col in date_columns:
-    clean_booking[col] = clean_booking[col].dt.floor('d')
+    clean_booking[col] = clean_booking[col].dt.strftime('%Y-%m-%d')
+
+
+datetime_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
+for col in datetime_columns:
+    clean_booking[col] = pd.to_datetime(clean_booking[col], errors='coerce').dt.tz_localize("America/New_York")
 
     
 # Make a new column for sentence PK
