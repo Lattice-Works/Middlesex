@@ -4,7 +4,7 @@ import numpy as np
 import yaml
 from olpy.flight import Flight
 
-file = "***"
+file = "/Users/nicholas/local/mappers/middlesexmapper.yaml"
 with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
@@ -35,12 +35,12 @@ clean_cc = case_charge_df[cc_flight_cols]
 clean_cc['OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'coerce')
     
 # Strip all whitespace from object (string) columns and remove empty strings ('')
-clean_cc = clean_cc.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+clean_cc = clean_cc.applymap(lambda x: x.str.strip() if type(x) == 'str' else x)
 clean_cc.replace('', np.nan, inplace=True)
 
 # Join to booking on SYSID to get PCP (key for inmates)
 clean_cc = clean_cc.set_index('SYSID').join(booking_df[['SYSID','PCP']].set_index('SYSID'))
-clean_cc.reset_index()
+clean_cc = clean_cc.reset_index()
 
 
 # Prepare dates for SQL
@@ -50,15 +50,21 @@ date_columns = ['DISPOSITION_DATE']
 
 for col in date_columns:
    clean_cc[col] = clean_cc[col].dt.strftime('%Y-%m-%d')
+   clean_cc.loc[clean_cc[col] == 'NaT', col] = np.nan
 
-datetime_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64    ]
+datetime_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64]
 
 for col in datetime_columns:
-    clean_cc[col] = pd.to_datetime(clean_cc[col], errors='coerce').dt.tz_localiz    e("America/New_York")
+    clean_cc[col] = pd.to_datetime(clean_cc[col], errors='coerce').dt.tz_localize("America/New_York")
+
+clean_cc['CHARGE_ORDER'] = clean_cc['CHARGE_ORDER'].astype('Int64')
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):
-    combined_cols = df[col1].astype(str) + df[col2].astype(str)
+    cols = [col1,col2]
+    c1nn = df.loc[df[cols].notnull().all(axis=1), col1].astype(str)
+    c2nn = df.loc[df[cols].notnull().all(axis=1), col2].astype(str)
+    combined_cols =  c1nn + c2nn
     assn_hash = combined_cols.apply(lambda x: hash(x+name))
     return assn_hash
 

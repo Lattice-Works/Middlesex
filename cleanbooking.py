@@ -40,6 +40,7 @@ date_columns = ['BIRTH']
 
 for col in date_columns:
     clean_booking[col] = clean_booking[col].dt.strftime('%Y-%m-%d')
+    clean_booking.loc[clean_booking[col] == 'NaT', col] = np.nan
 
 
 datetime_columns = [k for (k,v) in clean_booking.dtypes.items() if v.type == np.datetime64]
@@ -52,7 +53,10 @@ clean_booking['SENTENCE_PK'] = clean_booking['PCP'].astype(str) + clean_booking[
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):
-    combined_cols = df[col1].astype(str) + df[col2].astype(str)
+    cols = [col1,col2]
+    c1nn = df.loc[df[cols].notnull().all(axis=1), col1].astype(str)
+    c2nn = df.loc[df[cols].notnull().all(axis=1), col2].astype(str)
+    combined_cols =  c1nn + c2nn
     assn_hash = combined_cols.apply(lambda x: hash(x+name))
     return assn_hash
 

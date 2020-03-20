@@ -1,11 +1,13 @@
+organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff" 
+
 entityDefinitions:
 
   person:
     fqn: "nc.SubjectIdentification"
     entitySetName: "MSOInmates"
     propertyDefinitions:
-      ol.id:
-        type: "ol.id"
+      nc.SubjectIdentification:
+        type: "nc.SubjectIdentification"
         column: "PCP"
     name: "person"
  
@@ -28,9 +30,6 @@ entityDefinitions:
       ol.eventcount:
         type: "ol.eventcount"
         column: "CHARGE_ORDER"
-        # ol.type:
-        #   type: "ol.type"
-        #   column: "CHARGE_TYPE_ID"
       ol.description:
         type: "ol.description"
         column: "OFFENSE_DESCRIPTION"
@@ -103,7 +102,7 @@ associationDefinitions:
     name: "relatedto"
 
   registeredfor:
-    fqn: "ol.registeredfor"
+    fqn: "general.registeredfor"
     entitySetName: "MSORegisteredfor"
     src: "chargeevent"
     dst: "charge"
@@ -149,16 +148,16 @@ associationDefinitions:
         column: "DISPOSITION_DATE"
     name: "clearedby"
 
-  chargedwith:
-    fqn: "ol.chargedwith"
-    entitySetName: "MSOChargedWith"
-    src: "person"
-    dst: "charge"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "assn_chargedwith"
-    name: "chargedwith"
+  # chargedwith:
+  #   fqn: "ol.chargedwith"
+  #   entitySetName: "MSOChargedWith"
+  #   src: "person"
+  #   dst: "charge"
+  #   propertyDefinitions:
+  #     ol.id:
+  #       type: "ol.id"
+  #       column: "assn_chargedwith"
+  #   name: "chargedwith"
   
   clearedby2:
     fqn: "ol.clearedby"
@@ -174,13 +173,13 @@ associationDefinitions:
         column: "DISPOSITION_DATE"
     name: "clearedby2"
   
-  chargedwith2:
-    fqn: "ol.chargedwith"
-    entitySetName: "MSOChargedWith"
-    src: "person"
-    dst: "chargeevent"
-    propertyDefinitions:
-      ol.id:
-        type: "ol.id"
-        column: "assn_chargedwith2"
-    name: "chargedwith2"
+  # chargedwith2:
+  #   fqn: "ol.chargedwith"
+  #   entitySetName: "MSOChargedWith"
+  #   src: "person"
+  #   dst: "chargeevent"
+  #   propertyDefinitions:
+  #     ol.id:
+  #       type: "ol.id"
+  #       column: "assn_chargedwith2"
+  #   name: "chargedwith2"

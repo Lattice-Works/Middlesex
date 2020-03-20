@@ -4,7 +4,7 @@ import numpy as np
 import yaml
 from olpy.flight import Flight
 
-file = "***"
+file = "/Users/nicholas/local/mappers/middlesexmapper.yaml"
 with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
@@ -25,7 +25,7 @@ middlesex_cc_hist_fd = fl.schema
 cc_hist_cols = list(fl.get_all_columns())
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
-clean_cc_hist_hist = cc_history_df[cc_hist_cols]
+clean_cc_hist = cc_history_df[cc_hist_cols]
     
 # Strip all whitespace from object (string) columns and remove empty strings ('')
 clean_cc_hist = clean_cc_hist.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -38,16 +38,22 @@ date_columns = ['DNA_SAMPLE_DATE','DISPOSITION_DATE']
 
 for col in date_columns:
    clean_cc_hist[col] = clean_cc_hist[col].dt.strftime('%Y-%m-%d')
+   clean_cc_hist.loc[clean_cc_hist[col] == 'NaT', col] = np.nan
 
 datetime_columns = [k for (k,v) in clean_cc_hist.dtypes.items() if v.type == np.datetime64    ]
 
 for col in datetime_columns:
-    clean_cc_hist[col] = pd.to_datetime(clean_cc_hist[col], errors='coerce').dt.tz_localiz    e("America/New_York")
+    clean_cc_hist[col] = pd.to_datetime(clean_cc_hist[col], errors='coerce').dt.tz_localize("America/New_York")
 
+clean_cc_hist['CHARGE_ORDER'] = clean_cc_hist['CHARGE_ORDER'].astype('Int64')
+clean_cc_hist['DNA_SAMPLE_STATUS'] = clean_cc_hist['DNA_SAMPLE_STATUS'].map({'Y': 1, 'N': 0}).astype('Int64')
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):
-    combined_cols = df[col1].astype(str) + df[col2].astype(str)
+    cols = [col1,col2]
+    c1nn = df.loc[df[cols].notnull().all(axis=1), col1].astype(str)
+    c2nn = df.loc[df[cols].notnull().all(axis=1), col2].astype(str)
+    combined_cols =  c1nn + c2nn
     assn_hash = combined_cols.apply(lambda x: hash(x+name))
     return assn_hash
 

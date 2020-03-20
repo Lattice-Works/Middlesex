@@ -1,3 +1,4 @@
+organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff" 
 entityDefinitions:
   charge:
     fqn: "ol.offense"
@@ -72,7 +73,7 @@ associationDefinitions:
     name: "clearedby"
 
   clearedby2:
-    fqn: "ol.clearedby2"
+    fqn: "ol.clearedby"
     entitySetName: "MSOClearedby"
     src: "chargeevent"
     dst: "disposition"
@@ -100,7 +101,7 @@ associationDefinitions:
     name: "relatedto"
 
   registeredfor:
-    fqn: "ol.registeredfor"
+    fqn: "general.registeredfor"
     entitySetName: "MSORegisteredfor"
     src: "chargeevent"
     dst: "charge"
