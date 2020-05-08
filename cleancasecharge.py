@@ -1,4 +1,7 @@
 import sqlalchemy
+import re
+import csv
+from io import StringIO
 import pandas as pd
 import numpy as np
 import yaml
@@ -9,7 +12,9 @@ with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
 
-db_name = creds['dbname']
+pattern = re.compile("(org\w+)")
+
+db_name = pattern.search(creds['jdbcUrl']).group(1)
 usr_name = creds['username']
 db_password = creds['password']
 
@@ -19,8 +24,12 @@ middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_passwo
 booking_query = 'select "SYSID", "PCP" from booking;'
 booking_df=pd.read_sql_query(booking_query, middlesex_engine)
 
+print('Engine created')
+
 case_charge_query = "select * from case_charge;"
 case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
+
+print('Query completed')
 
 # Make a flight object from current yaml
 fl2 = Flight()
@@ -32,7 +41,8 @@ cc_flight_cols = list(fl2.get_all_columns())
 clean_cc = case_charge_df[cc_flight_cols]
 
 # Make OFFENSE_DATE into a datetime and coerce errors (make NaT) since datetime64 only goes to ~2250AD and some values are from 6201AD
-clean_cc['OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'coerce')
+clean_cc.loc[:,'OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'coerce')
+
     
 # Strip all whitespace from object (string) columns and remove empty strings ('')
 clean_cc = clean_cc.applymap(lambda x: x.str.strip() if type(x) == 'str' else x)
@@ -78,6 +88,26 @@ def make_assn_cols(df, fd):
 
 make_assn_cols(clean_cc, middlesex_cc_fd)
 
-# Take a sample and make a csv for sample integrations
-engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
-clean_cc.to_sql("clean_cc", engine)
+
+print('Processing finished')
+
+def psql_insert_copy(table, conn, keys, data_iter):
+    # gets a DBAPI connection that can provide a cursor
+    dbapi_conn = conn.connection
+    with dbapi_conn.cursor() as cur:
+        s_buf = StringIO()
+        writer = csv.writer(s_buf)
+        writer.writerows(data_iter)
+        s_buf.seek(0)
+
+        columns = ', '.join('"{}"'.format(k) for k in keys)
+        if table.schema:
+            table_name = '{}.{}'.format(table.schema, table.name)
+        else:
+            table_name = table.name
+
+        sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(
+            table_name, columns)
+        cur.copy_expert(sql=sql, file=s_buf)
+
+clean_cc.to_sql("clean_cc", middlesex_engine, method=psql_insert_copy)

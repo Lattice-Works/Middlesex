@@ -1,7 +1,9 @@
 from olpy.flight import Flight
+import csv
 import yaml
 import sqlalchemy
 import pandas as pd
+from io import StringIO
 import numpy as np
 
 file = '/Users/nicholas/local/mappers/middlesexmapper.yaml'
@@ -15,8 +17,12 @@ password = creds['password']
 
 middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}@atlas.openlattice.com:30001/{dbname}',connect_args={'sslmode':'require'})
 
+print('Engine created')
+
 booking_query = 'select * from booking;'
 booking_df=pd.read_sql_query(booking_query, middlesex_engine)
+
+print('Query completed')
 
 # Make a flight object from current yaml
 fl = Flight()
@@ -26,6 +32,7 @@ flight_cols = list(fl.get_all_columns())
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_booking = booking_df[flight_cols]
+
 
 # Strip all whitespace from object (string) columns, and remove all blank strings ('')
 clean_booking = clean_booking.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -70,7 +77,26 @@ def make_assn_cols(df, fd):
 
 make_assn_cols(clean_booking, middlesex_booking_fd)
 
-# Take a sample and make a table on test db for sample integrations
 
-engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
-clean_booking.to_sql("clean_booking", engine)
+print('Processing finished')
+
+def psql_insert_copy(table, conn, keys, data_iter):
+    # gets a DBAPI connection that can provide a cursor
+    dbapi_conn = conn.connection
+    with dbapi_conn.cursor() as cur:
+        s_buf = StringIO()
+        writer = csv.writer(s_buf)
+        writer.writerows(data_iter)
+        s_buf.seek(0)
+
+        columns = ', '.join('"{}"'.format(k) for k in keys)
+        if table.schema:
+            table_name = '{}.{}'.format(table.schema, table.name)
+        else:
+            table_name = table.name
+
+        sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(
+            table_name, columns)
+        cur.copy_expert(sql=sql, file=s_buf)
+
+clean_booking.to_sql("clean_booking", middlesex_engine, method=psql_insert_copy)

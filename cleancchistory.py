@@ -1,6 +1,9 @@
 import sqlalchemy
 import pandas as pd
 import numpy as np
+import re
+from io import StringIO
+import csv
 import yaml
 from olpy.flight import Flight
 
@@ -9,14 +12,21 @@ with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
 
-db_name = creds['dbname']
+
+pattern = re.compile("(org\w+)")
+
+db_name = pattern.search(creds['jdbcUrl']).group(1)
 usr_name = creds['username']
 db_password = creds['password']
 
 middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_password}@atlas.openlattice.com:30001/{db_name}',connect_args={'sslmode':'require'})
 
+print('Engine created')
+
 cc_history_query = "select * from case_charge_history;"
 cc_history_df=pd.read_sql_query(cc_history_query, middlesex_engine)
+
+print('Query completed')
 
 # Make a flight object from current yaml
 fl = Flight()
@@ -67,6 +77,25 @@ def make_assn_cols(df, fd):
 
 make_assn_cols(clean_cc_hist, middlesex_cc_hist_fd)
 
-# Take a sample and make a table on test db for sample integrations
-engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
-clean_cc_hist.to_sql("clean_cc_hist", engine)
+print('Processing finished')
+
+def psql_insert_copy(table, conn, keys, data_iter):
+    # gets a DBAPI connection that can provide a cursor
+    dbapi_conn = conn.connection
+    with dbapi_conn.cursor() as cur:
+        s_buf = StringIO()
+        writer = csv.writer(s_buf)
+        writer.writerows(data_iter)
+        s_buf.seek(0)
+
+        columns = ', '.join('"{}"'.format(k) for k in keys)
+        if table.schema:
+            table_name = '{}.{}'.format(table.schema, table.name)
+        else:
+            table_name = table.name
+
+        sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(
+            table_name, columns)
+        cur.copy_expert(sql=sql, file=s_buf)
+
+clean_cc_hist.to_sql("clean_cc_hist", middlesex_engine, method=psql_insert_copy)
