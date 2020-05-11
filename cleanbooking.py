@@ -5,17 +5,20 @@ import sqlalchemy
 import pandas as pd
 from io import StringIO
 import numpy as np
+import re
 
 file = '/Users/nicholas/local/mappers/middlesexmapper.yaml'
 with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
 
-dbname = creds['dbname']
+pattern = re.compile("(org\w+)")
+
+db_name = pattern.search(creds['jdbcUrl']).group(1) 
 username = creds['username']
 password = creds['password']
 
-middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}@atlas.openlattice.com:30001/{dbname}',connect_args={'sslmode':'require'})
+middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}@atlas.openlattice.com:30001/{db_name}',connect_args={'sslmode':'require'})
 
 print('Engine created')
 
@@ -24,9 +27,12 @@ booking_df=pd.read_sql_query(booking_query, middlesex_engine)
 
 print('Query completed')
 
+booking_df['DATASOURCE'] = "Middlesex County Jail"
+booking_df['SENTENCE_PK'] = booking_df['PCP'].astype(str) + booking_df['COMDATE'].astype(str)
+
 # Make a flight object from current yaml
 fl = Flight()
-fl.deserialize('/Users/nicholas/Clients/Middlesex/msobooking.yaml')
+fl.deserialize('/Users/nicholas/repos/Middlesex/msobooking.yaml')
 middlesex_booking_fd = fl.schema
 flight_cols = list(fl.get_all_columns())
 
@@ -44,6 +50,27 @@ clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
 clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
 
 date_columns = ['BIRTH']
+
+# Standardize Race, Sex, Ethnicity
+
+clean_booking['RACE'] = clean_booking['RACE'].map({"A ":"Asian", "AM":"Native American", "AS": "Asian", "B ": "Black", "W ": "White"}).fillna("Unknown")
+clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"N":"Non-Hispanic", "Y":"Hispanic"}).fillna("Unknown")
+clean_booking['SEX'] = clean_booking['SEX'].map({"M":"Male", "m":"Male", "F":"Female"}).fillna("Unknown")
+
+
+# Officer Roles
+clean_booking.loc[clean_booking['IDOFF'].notna(), 'ROLE'] = 'Officer'
+
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'DNA_ROLE_DESCRIPTION'] = 'DNA'
+
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'COM_ROLE_DESCRIPTION'] = 'Committing'
+
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'REL_ROLE_DESCRIPTION'] = 'Releasing'
+
+
 
 for col in date_columns:
     clean_booking[col] = clean_booking[col].dt.strftime('%Y-%m-%d')

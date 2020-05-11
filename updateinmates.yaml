@@ -1,0 +1,41 @@
+organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff"
+entityDefinitions:
+  person:
+    fqn: "general.person"
+    entitySetName: "MSOInmates"
+    updateType: "PartialReplace"
+    propertyDefinitions:
+      nc.SubjectIdentification:
+        type: "nc.SubjectIdentification"
+        column: "PCP"
+      nc.PersonGivenName:
+        type: "nc.PersonGivenName"
+        column: "FIRSTNAM"
+      nc.PersonSurName:
+        type: "nc.PersonSurName"
+        column: "LASTNAME"
+      nc.SSN:
+        type: "nc.SSN"
+        column: "SSNUM"
+      nc.PersonSex:
+        type: "nc.PersonSex"
+        column: "SEX"
+      nc.PersonSuffix:
+        type: "nc.PersonSuffix"
+        column: "AFFIX"
+      nc.PersonBirthDate:
+        type: "nc.PersonBirthDate"
+        column: "BIRTH"
+      nc.PersonEthnicity:
+        type: "nc.PersonEthnicity"
+        column: "HISPANIC"
+      nc.PersonRace:
+        type: "nc.PersonRace"
+        column: "RACE"
+      nc.PersonMiddleName:
+        type: "nc.PersonMiddleName"
+        column: "MIDDLE"
+      ol.datasource:
+        type: "ol.datasource"
+        column: "DATASOURCE"    
+    name: "person"
