@@ -2,8 +2,12 @@ organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff"
 entityDefinitions:
 
   person:
+    fqn: "general.person"
     entitySetName: "MSOInmates"
-    propertyDefinitions: {}
+    propertyDefinitions: 
+      nc.SubjectIdentification:
+        type: "nc.SubjectIdentification"
+        column: "PCP"
     name: "person"
 
   persondetails:
@@ -22,8 +26,12 @@ entityDefinitions:
     name: "persondetails"
 
   fbinumber:
+    fqn: "ol.identification"
     entitySetName: "MSOFBINumbers"
-    propertyDefinitions: {}
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "FBI"
     name: "fbinumber"
 
 associationDefinitions:
