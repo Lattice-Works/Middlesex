@@ -34,7 +34,7 @@ booking_df['SENTENCE_PK'] = booking_df['PCP'].astype(str) + booking_df['COMDATE'
 fl = Flight()
 fl.deserialize('/Users/nicholas/repos/Middlesex/msobooking.yaml')
 middlesex_booking_fd = fl.schema
-flight_cols = list(fl.get_all_columns())
+flight_cols = [col for col in fl.get_all_columns() if col[:4] != "assn" if col not in ['ROLE', 'DNA_ROLE_DESCRIPTION', 'COM_ROLE_DESCRIPTION', 'REL_ROLE_DESCRIPTION']]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_booking = booking_df[flight_cols]
@@ -49,13 +49,17 @@ clean_booking['SERVED'] = clean_booking['SERVED'].astype('Int64')
 clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
 clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
 
-date_columns = ['BIRTH']
+
 
 # Standardize Race, Sex, Ethnicity
 
 clean_booking['RACE'] = clean_booking['RACE'].map({"A ":"Asian", "AM":"Native American", "AS": "Asian", "B ": "Black", "W ": "White"}).fillna("Unknown")
 clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"N":"Non-Hispanic", "Y":"Hispanic"}).fillna("Unknown")
 clean_booking['SEX'] = clean_booking['SEX'].map({"M":"Male", "m":"Male", "F":"Female"}).fillna("Unknown")
+
+# Make names Title case
+for col in ['FIRSTNAM', 'MIDDLE', 'LASTNAME']:
+    clean_booking.loc[:,col] = clean_booking[col].str.title()
 
 
 # Officer Roles
@@ -71,6 +75,7 @@ clean_booking.loc[clean_booking['RELOFF'].notna(), 'ROLE'] = 'Officer'
 clean_booking.loc[clean_booking['RELOFF'].notna(), 'REL_ROLE_DESCRIPTION'] = 'Releasing'
 
 
+date_columns = ['BIRTH']
 
 for col in date_columns:
     clean_booking[col] = clean_booking[col].dt.strftime('%Y-%m-%d')

@@ -32,7 +32,7 @@ print('Query completed')
 fl = Flight()
 fl.deserialize('/Users/nicholas/Clients/Middlesex/msocchistory.yaml')
 middlesex_cc_hist_fd = fl.schema
-cc_hist_cols = list(fl.get_all_columns())
+cc_hist_cols = [col for col in fl.get_all_columns() if col[:4] != "assn"]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_cc_hist = cc_history_df[cc_hist_cols]

@@ -305,17 +305,6 @@ associationDefinitions:
         column: "DNA_SAMPLE_DATE"
     name: "subjectof2"
 
-    #reported4:
-    #  fqn: "ol.reported"
-    #  entitySetName: "MSOReported"
-    #  src: "person"
-    #  dst: "immigrationstatus"
-    #  propertyDefinitions:
-    #    general.id:
-    #      type: "general.id"
-    #      column: "assn_reported4"
-    #  name: "reported4"
-
   involvedin:
     fqn: "ol.involvedin"
     entitySetName: "MSOInvolvedin"
@@ -363,28 +352,6 @@ associationDefinitions:
         type: "ol.roledescription"
         column: "COM_ROLE_DESCRIPTION"
     name: "involvedin3"
-
-  # locatedat:
-  #   fqn: "ol.locatedat"
-  #   entitySetName: "MSOLocatedat"
-  #   src: "committingofficer"
-  #   dst: "committingcounty"
-  #   propertyDefinitions:
-  #     ol.id:
-  #       type: "ol.id"
-  #       column: "assn_locatedat"
-  #   name: "locatedat"
-
-  # locatedat2:
-  #   fqn: "ol.locatedat"
-  #   entitySetName: "MSOLocatedat"
-  #   src: "temporaryrelease"
-  #   dst: "releaselocation"
-  #   propertyDefinitions:
-  #     ol.id:
-  #       type: "ol.id"
-  #       column: "assn_locatedat2"
-  #   name: "locatedat2"
 
   committedby:
     fqn: "ol.committedby"
@@ -441,14 +408,4 @@ associationDefinitions:
         column: "assn_reported3"
     name: "reported3"
   
-  # locatedat3:
-  #   fqn: "ol.locatedat"
-  #   entitySetName: "MSOLocatedAt"
-  #   src: "jailstay"
-  #   dst: "facility"
-  #   propertyDefinitions:
-  #     ol.id:
-  #       type: "ol.id"
-  #       column: "assn_locatedat3"
-  #   name: "locatedat3"
 

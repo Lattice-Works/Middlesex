@@ -35,7 +35,7 @@ print('Query completed')
 fl2 = Flight()
 fl2.deserialize('/Users/nicholas/Clients/Middlesex/msocasecharge.yaml')
 middlesex_cc_fd = fl2.schema
-cc_flight_cols = list(fl2.get_all_columns())
+cc_flight_cols = [col for col in fl2.get_all_columns() if col[:4] != "assn"]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_cc = case_charge_df[cc_flight_cols]
