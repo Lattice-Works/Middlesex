@@ -1,0 +1,54 @@
+organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff"
+entityDefinitions:
+
+  person:
+    entitySetName: "MSOInmates"
+    propertyDefinitions: {}
+    name: "person"
+
+  persondetails:
+    fqn: "ol.persondetails"
+    entitySetName: "MSOPersondetails"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "SENTENCE_PK"
+      person.maritalstatus:
+        type: "person.maritalstatus"
+        column: "MARITAL"
+      person.ageatevent:
+        type: "person.ageatevent"
+        column: "AGE"
+    name: "persondetails"
+
+  fbinumber:
+    entitySetName: "MSOFBINumbers"
+    propertyDefinitions: {}
+    name: "fbinumber"
+
+associationDefinitions:
+
+  reported:
+    fqn: "ol.reported"
+    entitySetName: "MSOReported"
+    src: "person"
+    dst: "persondetails"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "assn_reported"
+      date.completeddatetime:
+        type: "date.completeddatetime"
+        column: "COMDATE"
+    name: "reported"
+
+  reported3:
+    fqn: "ol.reported"
+    entitySetName: "MSOReported"
+    src: "person"
+    dst: "fbinumber"
+    propertyDefinitions:
+      general.id:
+        type: "general.id"
+        column: "assn_reported3"
+    name: "reported3"

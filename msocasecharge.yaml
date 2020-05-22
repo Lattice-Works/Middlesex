@@ -3,7 +3,7 @@ organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff"
 entityDefinitions:
 
   person:
-    fqn: "nc.SubjectIdentification"
+    fqn: "general.person"
     entitySetName: "MSOInmates"
     propertyDefinitions:
       nc.SubjectIdentification:
@@ -27,9 +27,6 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "OFFENSE_CODE"
-      ol.eventcount:
-        type: "ol.eventcount"
-        column: "CHARGE_ORDER"
       ol.description:
         type: "ol.description"
         column: "OFFENSE_DESCRIPTION"
@@ -45,8 +42,8 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "CHARGE_PK"
-      ol.datetimestart:
-        type: "ol.datetimestart"
+      date.completeddatetime:
+        type: "date.completeddatetime"
         column: "OFFENSE_DATE"
       ol.notes:
         type: "ol.notes"
@@ -147,17 +144,6 @@ associationDefinitions:
         type: "general.date"
         column: "DISPOSITION_DATE"
     name: "clearedby"
-
-  # chargedwith:
-  #   fqn: "ol.chargedwith"
-  #   entitySetName: "MSOChargedWith"
-  #   src: "person"
-  #   dst: "charge"
-  #   propertyDefinitions:
-  #     ol.id:
-  #       type: "ol.id"
-  #       column: "assn_chargedwith"
-  #   name: "chargedwith"
   
   clearedby2:
     fqn: "ol.clearedby"
@@ -172,14 +158,3 @@ associationDefinitions:
         type: "general.date"
         column: "DISPOSITION_DATE"
     name: "clearedby2"
-  
-  # chargedwith2:
-  #   fqn: "ol.chargedwith"
-  #   entitySetName: "MSOChargedWith"
-  #   src: "person"
-  #   dst: "chargeevent"
-  #   propertyDefinitions:
-  #     ol.id:
-  #       type: "ol.id"
-  #       column: "assn_chargedwith2"
-  #   name: "chargedwith2"

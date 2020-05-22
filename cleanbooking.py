@@ -1,28 +1,40 @@
 from olpy.flight import Flight
+import csv
 import yaml
 import sqlalchemy
 import pandas as pd
+from io import StringIO
 import numpy as np
+import re
 
 file = '/Users/nicholas/local/mappers/middlesexmapper.yaml'
 with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
 
-dbname = creds['dbname']
+pattern = re.compile("(org\w+)")
+
+db_name = pattern.search(creds['jdbcUrl']).group(1) 
 username = creds['username']
 password = creds['password']
 
-middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}@atlas.openlattice.com:30001/{dbname}',connect_args={'sslmode':'require'})
+middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}@atlas.openlattice.com:30001/{db_name}',connect_args={'sslmode':'require'})
+
+print('Engine created')
 
 booking_query = 'select * from booking;'
 booking_df=pd.read_sql_query(booking_query, middlesex_engine)
 
+print('Query completed')
+
+booking_df['DATASOURCE'] = "Middlesex County Jail"
+booking_df.loc[:,'SENTENCE_PK'] = booking_df['PCP'].astype(str) + booking_df['COMDATE'].astype(str)
+
 # Make a flight object from current yaml
 fl = Flight()
-fl.deserialize('/Users/nicholas/Clients/Middlesex/msobooking.yaml')
+fl.deserialize('/Users/nicholas/repos/Middlesex/msobooking.yaml')
 middlesex_booking_fd = fl.schema
-flight_cols = list(fl.get_all_columns())
+flight_cols = [col for col in fl.get_all_columns() if col[:4] != "assn" if col not in ['ROLE', 'DNA_ROLE_DESCRIPTION', 'COM_ROLE_DESCRIPTION', 'REL_ROLE_DESCRIPTION']]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_booking = booking_df[flight_cols]
@@ -32,9 +44,35 @@ clean_booking = clean_booking.apply(lambda x: x.str.strip() if x.dtype == "objec
 clean_booking.replace('', np.nan, inplace=True)
 
 # Make float columns to int to fit with the desired datatypes on prod
-clean_booking['SERVED'] = clean_booking['SERVED'].astype('Int64')
-clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
-clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
+clean_booking.loc[:,'SERVED'] = clean_booking['SERVED'].astype('Int64')
+clean_booking.loc[:,'AGE'] = clean_booking['AGE'].astype('Int64')
+clean_booking.loc[:,'SYSID'] = booking_df['SYSID'].astype('Int64')
+clean_booking.loc[:,'SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
+
+
+
+# Standardize Race, Sex, Ethnicity
+clean_booking['RACE'] = clean_booking['RACE'].map({"A ":"Asian", "AM":"Native American", "AS": "Asian", "B ": "Black", "W ": "White"}).fillna("Unknown")
+clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"N":"Non-Hispanic", "Y":"Hispanic"}).fillna("Unknown")
+clean_booking['SEX'] = clean_booking['SEX'].map({"M":"Male", "m":"Male", "F":"Female"}).fillna("Unknown")
+
+# Make names Title case
+for col in ['FIRSTNAM', 'MIDDLE', 'LASTNAME']:
+    clean_booking.loc[:,col] = clean_booking[col].str.title()
+
+
+# Officer Roles
+clean_booking.loc[clean_booking['IDOFF'].notna(), 'ROLE'] = 'Officer'
+
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['DNA_SAMPLE_OFFICER'].notna(), 'DNA_ROLE_DESCRIPTION'] = 'DNA'
+
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['COMOFF'].notna(), 'COM_ROLE_DESCRIPTION'] = 'Committing'
+
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'ROLE'] = 'Officer'
+clean_booking.loc[clean_booking['RELOFF'].notna(), 'REL_ROLE_DESCRIPTION'] = 'Releasing'
+
 
 date_columns = ['BIRTH']
 
@@ -70,7 +108,26 @@ def make_assn_cols(df, fd):
 
 make_assn_cols(clean_booking, middlesex_booking_fd)
 
-# Take a sample and make a table on test db for sample integrations
 
-engine = sqlalchemy.create_engine('postgresql://nicholas@localhost:5432/test')
-clean_booking.to_sql("clean_booking", engine)
+print('Processing finished')
+
+def psql_insert_copy(table, conn, keys, data_iter):
+    # gets a DBAPI connection that can provide a cursor
+    dbapi_conn = conn.connection
+    with dbapi_conn.cursor() as cur:
+        s_buf = StringIO()
+        writer = csv.writer(s_buf)
+        writer.writerows(data_iter)
+        s_buf.seek(0)
+
+        columns = ', '.join('"{}"'.format(k) for k in keys)
+        if table.schema:
+            table_name = '{}.{}'.format(table.schema, table.name)
+        else:
+            table_name = table.name
+
+        sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(
+            table_name, columns)
+        cur.copy_expert(sql=sql, file=s_buf)
+
+clean_booking.to_sql("clean_booking", middlesex_engine, method=psql_insert_copy)
