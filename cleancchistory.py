@@ -25,17 +25,19 @@ print('Engine created')
 
 cc_history_query = "select * from case_charge_history;"
 cc_history_df=pd.read_sql_query(cc_history_query, middlesex_engine)
+cc_history_df.loc[:,"CHARGE_PK"]  = cc_history_df["CHARGE_PK"].astype(int)
 
 print('Query completed')
 
 # Make a flight object from current yaml
 fl = Flight()
-fl.deserialize('/Users/nicholas/Clients/Middlesex/msocchistory.yaml')
+fl.deserialize('/Users/nicholas/repos/Middlesex/msocchistory.yaml')
 middlesex_cc_hist_fd = fl.schema
 cc_hist_cols = [col for col in fl.get_all_columns() if col[:4] != "assn"]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_cc_hist = cc_history_df[cc_hist_cols]
+clean_cc_hist
     
 # Strip all whitespace from object (string) columns and remove empty strings ('')
 clean_cc_hist = clean_cc_hist.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -55,7 +57,6 @@ datetime_columns = [k for (k,v) in clean_cc_hist.dtypes.items() if v.type == np.
 for col in datetime_columns:
     clean_cc_hist[col] = pd.to_datetime(clean_cc_hist[col], errors='coerce').dt.tz_localize("America/New_York")
 
-clean_cc_hist['CHARGE_ORDER'] = clean_cc_hist['CHARGE_ORDER'].astype('Int64')
 clean_cc_hist['DNA_SAMPLE_STATUS'] = clean_cc_hist['DNA_SAMPLE_STATUS'].map({'Y': 1, 'N': 0}).astype('Int64')
 
 # Functions to make association hash and make columns from those

@@ -7,12 +7,6 @@ entityDefinitions:
       ol.id:
         type: "ol.id"
         column: "OFFENSE_CODE"
-      ol.eventcount:
-        type: "ol.eventcount"
-        column: "CHARGE_ORDER"
-      # ol.type:
-      #   type: "ol.type"
-      #   column: "CHARGE_TYPE_ID"
       ol.code:
         type: "ol.code"
         column: "OFFENSE_CODE"
@@ -45,9 +39,9 @@ entityDefinitions:
         column: "DISPOSITION"
     name: "disposition"
 
-  dnatest:
+  dnasample:
     fqn: "ol.medicaltest"
-    entitySetName: "MSODnatest"
+    entitySetName: "MSODnaSample"
     propertyDefinitions:
       general.id:
         type: "general.id"
@@ -55,7 +49,7 @@ entityDefinitions:
       ol.value:
         type: "ol.value"
         column: "DNA_SAMPLE_STATUS"
-    name: "dnatest"
+    name: "dnasample"
 
 associationDefinitions:
   clearedby:
@@ -89,7 +83,7 @@ associationDefinitions:
   relatedto:
     fqn: "ol.relatedto"
     entitySetName: "MSORelatedto"
-    src: "dnatest"
+    src: "dnasample"
     dst: "charge"
     propertyDefinitions:
       ol.id:

@@ -28,7 +28,7 @@ booking_df=pd.read_sql_query(booking_query, middlesex_engine)
 print('Query completed')
 
 booking_df['DATASOURCE'] = "Middlesex County Jail"
-booking_df['SENTENCE_PK'] = booking_df['PCP'].astype(str) + booking_df['COMDATE'].astype(str)
+booking_df.loc[:,'SENTENCE_PK'] = booking_df['PCP'].astype(str) + booking_df['COMDATE'].astype(str)
 
 # Make a flight object from current yaml
 fl = Flight()
@@ -39,20 +39,19 @@ flight_cols = [col for col in fl.get_all_columns() if col[:4] != "assn" if col n
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_booking = booking_df[flight_cols]
 
-
 # Strip all whitespace from object (string) columns, and remove all blank strings ('')
 clean_booking = clean_booking.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 clean_booking.replace('', np.nan, inplace=True)
 
 # Make float columns to int to fit with the desired datatypes on prod
-clean_booking['SERVED'] = clean_booking['SERVED'].astype('Int64')
-clean_booking['AGE'] = clean_booking['AGE'].astype('Int64')
-clean_booking['SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
+clean_booking.loc[:,'SERVED'] = clean_booking['SERVED'].astype('Int64')
+clean_booking.loc[:,'AGE'] = clean_booking['AGE'].astype('Int64')
+clean_booking.loc[:,'SYSID'] = booking_df['SYSID'].astype('Int64')
+clean_booking.loc[:,'SENTENCED_AS_ADULT'] = clean_booking['SENTENCED_AS_ADULT'].map({'Y': 1, 'N': 0}).astype('Int64')
 
 
 
 # Standardize Race, Sex, Ethnicity
-
 clean_booking['RACE'] = clean_booking['RACE'].map({"A ":"Asian", "AM":"Native American", "AS": "Asian", "B ": "Black", "W ": "White"}).fillna("Unknown")
 clean_booking['HISPANIC'] = clean_booking['HISPANIC'].map({"N":"Non-Hispanic", "Y":"Hispanic"}).fillna("Unknown")
 clean_booking['SEX'] = clean_booking['SEX'].map({"M":"Male", "m":"Male", "F":"Female"}).fillna("Unknown")

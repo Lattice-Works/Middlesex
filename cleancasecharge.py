@@ -23,22 +23,25 @@ middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_passwo
 # booking query needed for join on SYSID to get PCP (person id)
 booking_query = 'select "SYSID", "PCP" from booking;'
 booking_df=pd.read_sql_query(booking_query, middlesex_engine)
+booking_df.loc[:,'SYSID'] = booking_df['SYSID'].astype(int)
 
 print('Engine created')
 
 case_charge_query = "select * from case_charge;"
 case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
+case_charge_df.loc[:,["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]]  = case_charge_df[["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]].fillna(0).astype('Int64')
 
 print('Query completed')
 
 # Make a flight object from current yaml
 fl2 = Flight()
-fl2.deserialize('/Users/nicholas/Clients/Middlesex/msocasecharge.yaml')
+fl2.deserialize('/Users/nicholas/repos/Middlesex/msocasecharge.yaml')
 middlesex_cc_fd = fl2.schema
-cc_flight_cols = [col for col in fl2.get_all_columns() if col[:4] != "assn"]
+cc_flight_cols = [col for col in fl2.get_all_columns() if col[:4] != "assn" if col not in ['PCP']]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
 clean_cc = case_charge_df[cc_flight_cols]
+
 
 # Make OFFENSE_DATE into a datetime and coerce errors (make NaT) since datetime64 only goes to ~2250AD and some values are from 6201AD
 clean_cc.loc[:,'OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'coerce')
@@ -67,7 +70,6 @@ datetime_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datet
 for col in datetime_columns:
     clean_cc[col] = pd.to_datetime(clean_cc[col], errors='coerce').dt.tz_localize("America/New_York")
 
-clean_cc['CHARGE_ORDER'] = clean_cc['CHARGE_ORDER'].astype('Int64')
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):

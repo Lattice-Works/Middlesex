@@ -1,4 +1,4 @@
-organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff "
+organizationId: "93520f34-b245-43d0-832a-2d7caa42b1ff"
 entityDefinitions:
   jailstay:
     fqn: "ol.jailstay"
@@ -195,17 +195,6 @@ entityDefinitions:
         column: "RELADDR1"
     name: "releaselocation"
 
-    #immigrationstatus:
-    #  fqn: "ol.immigrationstatus"
-    #  entitySetName: "MSOImmigrationstatus"
-    #  propertyDefinitions:
-    #    ol.id:
-    #      type: "ol.id"
-    #      column: "INS"
-    #    ol.status:
-    #      type: "ol.status"
-    #      column: "INS"
-    #  name: "immigrationstatus"
 
   timeserved:
     fqn: "ol.jailstaylength"
@@ -225,7 +214,7 @@ entityDefinitions:
     propertyDefinitions:
       general.id:
         type: "general.id"
-        column: "PCP"
+        column: "SENTENCE_PK"
       person.maritalstatus:
         type: "person.maritalstatus"
         column: "MARITAL"
@@ -291,19 +280,19 @@ associationDefinitions:
         column: "assn_subjectof"
     name: "subjectof"
 
-  subjectof2:
-    fqn: "ol.subjectof"
-    entitySetName: "MSOSubjectof"
+  screenedwith:
+    fqn: "ol.screenedwith"
+    entitySetName: "MSOScreenedwith"
     src: "person"
     dst: "dnasample"
     propertyDefinitions:
       ol.id:
         type: "ol.id"
-        column: "assn_subjectof2"
+        column: "assn_screenedwith"
       date.completeddatetime:
         type: "date.completeddatetime"
         column: "DNA_SAMPLE_DATE"
-    name: "subjectof2"
+    name: "screenedwith"
 
   involvedin:
     fqn: "ol.involvedin"
@@ -407,5 +396,51 @@ associationDefinitions:
         type: "general.id"
         column: "assn_reported3"
     name: "reported3"
+
+  committedby2:
+    fqn: "ol.committedby"
+    entitySetName: "MSOCommittedby"
+    src: "person"
+    dst: "committingcounty"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_committedby2"
+    name: "committedby2"
+
+  releasedto:
+    fqn: "ol.releasedto"
+    entitySetName: "MSOReleasedto"
+    src: "person"
+    dst: "releaselocation"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_releasedto"
+    name: "releasedto"
+
+  locatedat:
+    fqn: "ol.locatedat"
+    entitySetName: "MSOLocatedat"
+    src: "jailstay"
+    dst: "facility"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_locatedat"
+    name: "locatedat"
   
+  occurredduring:
+    fqn: "ol.occurredduring"
+    entitySetName: "MSOOccurredduring"
+    src: "dnasample"
+    dst: "jailstay"
+    propertyDefinitions:
+      ol.id:
+        type: "ol.id"
+        column: "assn_occurredduring"
+      ol.datetimestart:
+        type: "ol.datetimestart"
+        column: "COMDATE"
+    name: "occurredduring"
 
