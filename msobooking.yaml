@@ -286,8 +286,8 @@ associationDefinitions:
     src: "person"
     dst: "dnasample"
     propertyDefinitions:
-      ol.id:
-        type: "ol.id"
+      general.id:
+        type: "general.id"
         column: "assn_screenedwith"
       date.completeddatetime:
         type: "date.completeddatetime"
