@@ -27,7 +27,7 @@ booking_df.loc[:,'SYSID'] = booking_df['SYSID'].astype(int)
 
 print('Engine created')
 
-case_charge_query = "select * from case_charge;"
+case_charge_query = """select * from case_charge where "OFFENSE_DATE" >= current_date - interval '1 week';"""
 case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
 case_charge_df.loc[:,["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]]  = case_charge_df[["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]].fillna(0).astype('Int64')
 
@@ -112,4 +112,4 @@ def psql_insert_copy(table, conn, keys, data_iter):
             table_name, columns)
         cur.copy_expert(sql=sql, file=s_buf)
 
-clean_cc.to_sql("clean_cc", middlesex_engine, method=psql_insert_copy)
+clean_cc.to_sql("zzz_clean_cc_1w", if_exists='replace', middlesex_engine, method=psql_insert_copy)

@@ -1,9 +1,9 @@
 import sqlalchemy
-import re
-import csv
-from io import StringIO
 import pandas as pd
 import numpy as np
+import re
+from io import StringIO
+import csv
 import yaml
 from olpy.flight import Flight
 
@@ -11,6 +11,7 @@ file = "/Users/nicholas/local/mappers/middlesexmapper.yaml"
 with open(file) as stream:
     mapper = yaml.safe_load(stream)
     creds = mapper['hikariConfigs']['middlesex']
+
 
 pattern = re.compile("(org\w+)")
 
@@ -20,56 +21,43 @@ db_password = creds['password']
 
 middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_password}@atlas.openlattice.com:30001/{db_name}',connect_args={'sslmode':'require'})
 
-# booking query needed for join on SYSID to get PCP (person id)
-booking_query = 'select "SYSID", "PCP" from booking;'
-booking_df=pd.read_sql_query(booking_query, middlesex_engine)
-booking_df.loc[:,'SYSID'] = booking_df['SYSID'].astype(int)
-
 print('Engine created')
 
-case_charge_query = "select * from case_charge;"
-case_charge_df=pd.read_sql_query(case_charge_query, middlesex_engine)
-case_charge_df.loc[:,["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]]  = case_charge_df[["CHARGE_PK","CASE_PK", "SYSID", "BOND_AMOUNT"]].fillna(0).astype('Int64')
+cc_history_query = """select * from case_charge_history where "REVISION_DATE" >= current_date - interval '1 week';"""
+cc_history_df=pd.read_sql_query(cc_history_query, middlesex_engine)
+cc_history_df.loc[:,"CHARGE_PK"]  = cc_history_df["CHARGE_PK"].astype(int)
 
 print('Query completed')
 
 # Make a flight object from current yaml
-fl2 = Flight()
-fl2.deserialize('/Users/nicholas/repos/Middlesex/msocasecharge.yaml')
-middlesex_cc_fd = fl2.schema
-cc_flight_cols = [col for col in fl2.get_all_columns() if col[:4] != "assn" if col not in ['PCP']]
+fl = Flight()
+fl.deserialize('/Users/nicholas/repos/Middlesex/msocchistory.yaml')
+middlesex_cc_hist_fd = fl.schema
+cc_hist_cols = [col for col in fl.get_all_columns() if col[:4] != "assn"]
 
 # Create a dataframe which is a subset of the original table from columns included in the flight
-clean_cc = case_charge_df[cc_flight_cols]
-
-
-# Make OFFENSE_DATE into a datetime and coerce errors (make NaT) since datetime64 only goes to ~2250AD and some values are from 6201AD
-clean_cc.loc[:,'OFFENSE_DATE'] = pd.to_datetime(clean_cc['OFFENSE_DATE'], errors = 'coerce')
-
+clean_cc_hist = cc_history_df[cc_hist_cols]
+clean_cc_hist
     
 # Strip all whitespace from object (string) columns and remove empty strings ('')
-clean_cc = clean_cc.applymap(lambda x: x.str.strip() if type(x) == 'str' else x)
-clean_cc.replace('', np.nan, inplace=True)
-
-# Join to booking on SYSID to get PCP (key for inmates)
-clean_cc = clean_cc.set_index('SYSID').join(booking_df[['SYSID','PCP']].set_index('SYSID'))
-clean_cc = clean_cc.reset_index()
-
+clean_cc_hist = clean_cc_hist.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+clean_cc_hist.replace('', np.nan, inplace=True)
 
 # Prepare dates for SQL
 # First select those which need to be dates on backend and add to date_columns
 # Then select those which are np.datetime64 in pandas (and possibly others) and localize
-date_columns = ['DISPOSITION_DATE']
+date_columns = ['DNA_SAMPLE_DATE','DISPOSITION_DATE']
 
 for col in date_columns:
-   clean_cc[col] = clean_cc[col].dt.strftime('%Y-%m-%d')
-   clean_cc.loc[clean_cc[col] == 'NaT', col] = np.nan
+   clean_cc_hist[col] = clean_cc_hist[col].dt.strftime('%Y-%m-%d')
+   clean_cc_hist.loc[clean_cc_hist[col] == 'NaT', col] = np.nan
 
-datetime_columns = [k for (k,v) in clean_cc.dtypes.items() if v.type == np.datetime64]
+datetime_columns = [k for (k,v) in clean_cc_hist.dtypes.items() if v.type == np.datetime64    ]
 
 for col in datetime_columns:
-    clean_cc[col] = pd.to_datetime(clean_cc[col], errors='coerce').dt.tz_localize("America/New_York")
+    clean_cc_hist[col] = pd.to_datetime(clean_cc_hist[col], errors='coerce').dt.tz_localize("America/New_York")
 
+clean_cc_hist['DNA_SAMPLE_STATUS'] = clean_cc_hist['DNA_SAMPLE_STATUS'].map({'Y': 1, 'N': 0}).astype('Int64')
 
 # Functions to make association hash and make columns from those
 def make_assn_hash(df, col1, col2, name):
@@ -88,8 +76,7 @@ def make_assn_cols(df, fd):
         dstcol = fd['entityDefinitions'][dst]['properties'][0]['column']
         df[col_string] = make_assn_hash(df, srccol, dstcol, k)
 
-make_assn_cols(clean_cc, middlesex_cc_fd)
-
+make_assn_cols(clean_cc_hist, middlesex_cc_hist_fd)
 
 print('Processing finished')
 
@@ -112,4 +99,4 @@ def psql_insert_copy(table, conn, keys, data_iter):
             table_name, columns)
         cur.copy_expert(sql=sql, file=s_buf)
 
-clean_cc.to_sql("clean_cc", middlesex_engine, method=psql_insert_copy)
+clean_cc_hist.to_sql("zzz_clean_cc_hist_1w", if_exists='replace', middlesex_engine, method=psql_insert_copy)

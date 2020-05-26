@@ -22,7 +22,7 @@ middlesex_engine = sqlalchemy.create_engine(f'postgresql://{username}:{password}
 
 print('Engine created')
 
-booking_query = 'select * from booking;'
+booking_query = """select * from booking where "COMDATE" >= current_date - interval '1 week';"""
 booking_df=pd.read_sql_query(booking_query, middlesex_engine)
 
 print('Query completed')
@@ -130,4 +130,4 @@ def psql_insert_copy(table, conn, keys, data_iter):
             table_name, columns)
         cur.copy_expert(sql=sql, file=s_buf)
 
-clean_booking.to_sql("clean_booking", middlesex_engine, method=psql_insert_copy)
+clean_booking.to_sql("zzz_clean_booking_1w", if_exists='replace', middlesex_engine, method=psql_insert_copy)
