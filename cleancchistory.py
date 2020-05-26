@@ -23,7 +23,7 @@ middlesex_engine = sqlalchemy.create_engine(f'postgresql://{usr_name}:{db_passwo
 
 print('Engine created')
 
-cc_history_query = "select * from case_charge_history;"
+cc_history_query = """select * from case_charge_history where "REVISION_DATE" >= current_date - interval '1 week';"""
 cc_history_df=pd.read_sql_query(cc_history_query, middlesex_engine)
 cc_history_df.loc[:,"CHARGE_PK"]  = cc_history_df["CHARGE_PK"].astype(int)
 
@@ -99,4 +99,4 @@ def psql_insert_copy(table, conn, keys, data_iter):
             table_name, columns)
         cur.copy_expert(sql=sql, file=s_buf)
 
-clean_cc_hist.to_sql("clean_cc_hist", middlesex_engine, method=psql_insert_copy)
+clean_cc_hist.to_sql("zzz_clean_cc_hist_1w", if_exists='replace', middlesex_engine, method=psql_insert_copy)
